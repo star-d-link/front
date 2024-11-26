@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import StudyCard from "../components/StudyCard";
+import Pagination from "../components/Pagination";
 
 const List = () => {
   const [studies, setStudies] = useState([]);
@@ -37,39 +38,6 @@ const List = () => {
     return <div>{error}</div>;
   }
 
-  const handlePageChange = (page) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const startPage = Math.max(1, currentPage - 3);
-    const endPage = Math.min(totalPages, currentPage + 3);
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-
-    // 항상 첫 페이지와 마지막 페이지를 표시하도록 추가
-    if (startPage > 2) {
-      pageNumbers.unshift("...");
-    }
-    if (startPage > 1) {
-      pageNumbers.unshift(1);
-    }
-
-    if (endPage < totalPages - 1) {
-      pageNumbers.push("...");
-    }
-    if (endPage < totalPages) {
-      pageNumbers.push(totalPages);
-    }
-
-    return pageNumbers;
-  };
-
   return (
       <div className="">
         <h1 className="text-2xl font-bold text-center">스터디 목록</h1>
@@ -83,36 +51,11 @@ const List = () => {
           )}
         </div>
 
-        <div className="flex justify-center">
-          <button
-              className=""
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-          >
-            이전
-          </button>
-          {getPageNumbers().map((page, index) => (
-              <button
-                  key={index}
-                  className={`${
-                    currentPage === page
-                        ? "font-bold"
-                        : ""
-                  }`}
-                  onClick={() => typeof page === "number" && handlePageChange(page)}
-                  disabled={page === "..."}
-              >
-                {page}
-              </button>
-          ))}
-          <button
-              className=""
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-          >
-            다음
-          </button>
-        </div>
+        <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+        />
       </div>
   );
 };
