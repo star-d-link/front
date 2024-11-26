@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 
-const StudyCard = ({ study }) => {
+const StudyCard = ({ study, onClick }) => {
   return (
-      <div key={study.studyId} className="">
+      <div onClick={onClick} key={study.studyId} className="">
         <h2 className="font-bold">{study.title}</h2>
         <p className="">작성자: {study.username}</p>
         <p className="">지역: {study.region}</p>
@@ -24,6 +24,7 @@ StudyCard.propTypes = {
     isOnline: PropTypes.bool.isRequired,
     createDate: PropTypes.string.isRequired,
   }).isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default StudyCard;

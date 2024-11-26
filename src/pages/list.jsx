@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination";
+import { useNavigate } from "react-router-dom";
 
 const List = () => {
   const [studies, setStudies] = useState([]);
@@ -9,7 +10,7 @@ const List = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
   const pageSize = 10;
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStudies = async () => {
@@ -38,13 +39,17 @@ const List = () => {
     return <div>{error}</div>;
   }
 
+  const handleCardClick = (studyId) => {
+    navigate(`/study/${studyId}`);
+  };
+
   return (
       <div className="">
         <h1 className="text-2xl font-bold text-center">스터디 목록</h1>
         <div className="">
           {studies.length > 0 ? (
               studies.map((study) => (
-                  <StudyCard key={study.studyId} study={study}/> // StudyCard 컴포넌트 사용
+                  <StudyCard key={study.studyId} study={study} onClick={() => handleCardClick(study.studyId)}/> // StudyCard 컴포넌트 사용
               ))
           ) : (
               <div>스터디 목록이 없습니다.</div>
