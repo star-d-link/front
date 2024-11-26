@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import StudyCard from "../components/StudyCard";
 
 const List = () => {
   const [studies, setStudies] = useState([]);
@@ -18,7 +19,7 @@ const List = () => {
         };
 
         const response = await axios.get("http://localhost:8080/study/list", { params });
-        setStudies(response.data.data.content);
+        setStudies(response.data.data.content || []);
       } catch {
         setError("스터디 목록을 불러오는 중 문제가 발생했습니다.");
       }
@@ -40,14 +41,7 @@ const List = () => {
         <div className="">
           {studies.length > 0 ? (
               studies.map((study) => (
-                  <div key={study.studyId} className="p-6">
-                    <h2 className="">{study.title}</h2>
-                    <p className="">작성자: {study.username}</p>
-                    <p className="">지역: {study.region}</p>
-                    <p className="">모집 중: {study.isRecruit ? "예" : "아니오"}</p>
-                    <p className="">온라인 여부: {study.isOnline ? "온라인" : "오프라인"}</p>
-                    <p className="">생성일: {study.createDate}</p>
-                  </div>
+                  <StudyCard key={study.studyId} study={study}/> // StudyCard 컴포넌트 사용
               ))
           ) : (
               <div>스터디 목록이 없습니다.</div>
