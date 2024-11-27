@@ -17,14 +17,14 @@ const List = () => {
     const fetchStudies = async () => {
       try {
         const params = new URLSearchParams(location.search);
-        const page = params.get("page") || currentPage - 1;
+        const page = params.get("page") || 1;
         const isOnline = params.get("isOnline");
         const isRecruit = params.get("isRecruit");
 
         const requestParams = {
-          page,
+          page: page - 1,
           size: pageSize,
-          sort: "createDate,DESC",
+          sort: "studyId,DESC",
         };
         if (isOnline !== null) {
           requestParams.isOnline = isOnline;
@@ -121,7 +121,12 @@ const List = () => {
         <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={(page) => {
+              const params = new URLSearchParams(location.search);
+              params.set("page", page);
+              setCurrentPage(page);
+              navigate(`/list?${params.toString()}`);
+            }}
         />
       </div>
   );
