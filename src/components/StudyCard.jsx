@@ -1,14 +1,30 @@
 import PropTypes from "prop-types";
 
-const StudyCard = ({ study, onClick }) => {
+const StudyCard = ({ study, onClick, className }) => {
   return (
-      <div onClick={onClick} key={study.studyId} className="">
-        <h2 className="font-bold">{study.title}</h2>
-        <p className="">작성자: {study.username}</p>
-        <p className="">지역: {study.region}</p>
-        <p className="">모집 중: {study.isRecruit ? "예" : "아니오"}</p>
-        <p className="">온라인 여부: {study.isOnline ? "온라인" : "오프라인"}</p>
-        <p className="">생성일: {study.createDate}</p>
+      <div onClick={onClick}
+           className={`p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer ${className}`}>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div
+                className="w-8 h-8 flex items-center justify-center bg-green-500 text-white rounded-full">
+              {study.username.charAt(0).toUpperCase()}
+            </div>
+            <p className="text-gray-700 font-medium">{study.username}</p>
+          </div>
+          <div className="text-gray-500">❤️ {study.likesCount}</div>
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">{study.title}</h2>
+        <p className="text-gray-600 text-sm mb-4">{study.content.length > 100
+            ? `${study.content.substring(0, 100)}...` : study.content}</p>
+        <div className="flex flex-wrap gap-2">
+          {study.hashTag.split(' ').map((tag, index) => (
+              <span key={index}
+                    className="text-sm text-white bg-gray-700 rounded-full px-3 py-1">
+            {tag}
+          </span>
+          ))}
+        </div>
       </div>
   );
 };
@@ -16,15 +32,14 @@ const StudyCard = ({ study, onClick }) => {
 // PropTypes 정의
 StudyCard.propTypes = {
   study: PropTypes.shape({
-    studyId: PropTypes.number.isRequired,
     username: PropTypes.string.isRequired,
+    likesCount: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    region: PropTypes.string,
-    isRecruit: PropTypes.bool.isRequired,
-    isOnline: PropTypes.bool.isRequired,
-    createDate: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    hashTag: PropTypes.string.isRequired,
   }).isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
+  className: PropTypes.string,
 };
 
 export default StudyCard;

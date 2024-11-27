@@ -75,31 +75,29 @@ const List = () => {
   };
 
   return (
-
-      <div className="">
-        <h1 className="text-2xl font-bold text-center">스터디 목록</h1>
-        <div className="flex justify-center gap-4 mb-4">
-          <div>
-            <label htmlFor="isOnlineFilter">온라인 여부: </label>
+      <div className="bg-gray-100 min-h-screen p-4">
+        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">스터디 목록</h1>
+        <div className="flex justify-center gap-6 mb-6">
+          <div className="flex items-center gap-2">
+            <label htmlFor="isOnlineFilter" className="font-medium text-gray-700">온라인 여부:</label>
             <select
                 id="isOnlineFilter"
                 value={new URLSearchParams(location.search).get("isOnline") || "all"}
                 onChange={(e) => handleFilterChange("isOnline", e.target.value === "" ? "all" : e.target.value === "true" ? "true" : "false")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">전체</option>
               <option value="true">온라인</option>
               <option value="false">오프라인</option>
             </select>
           </div>
-          <div>
-            <label htmlFor="isRecruitFilter">모집 여부: </label>
+          <div className="flex items-center gap-2">
+            <label htmlFor="isRecruitFilter" className="font-medium text-gray-700">모집 여부:</label>
             <select
                 id="isRecruitFilter"
-                value={new URLSearchParams(location.search).get("isRecruit")
-                    || "all"}
-                onChange={(e) => handleFilterChange("isRecruit",
-                    e.target.value === "" ? "all" : e.target.value === "true"
-                        ? "true" : "false")}
+                value={new URLSearchParams(location.search).get("isRecruit") || "all"}
+                onChange={(e) => handleFilterChange("isRecruit", e.target.value === "" ? "all" : e.target.value === "true" ? "true" : "false")}
+                className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">전체</option>
               <option value="true">모집 중</option>
@@ -107,27 +105,32 @@ const List = () => {
             </select>
           </div>
         </div>
-        <div className="">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {studies.length > 0 ? (
               studies.map((study) => (
-                  <StudyCard key={study.studyId} study={study}
-                             onClick={() => handleCardClick(study.studyId)}/> // StudyCard 컴포넌트 사용
+                  <StudyCard
+                      key={study.studyId}
+                      study={study}
+                      onClick={() => handleCardClick(study.studyId)}
+                      className="cursor-pointer bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                  />
               ))
           ) : (
-              <div>스터디 목록이 없습니다.</div>
+              <div className="col-span-full text-center text-gray-600">스터디 목록이 없습니다.</div>
           )}
         </div>
-
-        <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => {
-              const params = new URLSearchParams(location.search);
-              params.set("page", page);
-              setCurrentPage(page);
-              navigate(`/list?${params.toString()}`);
-            }}
-        />
+        <div className="flex justify-center mt-8">
+          <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                const params = new URLSearchParams(location.search);
+                params.set("page", page);
+                setCurrentPage(page);
+                navigate(`/study/list?${params.toString()}`);
+              }}
+          />
+        </div>
       </div>
   );
 };
