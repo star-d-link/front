@@ -127,7 +127,7 @@ const List = () => {
                 const params = new URLSearchParams(location.search);
                 params.set("page", page);
                 setCurrentPage(page);
-                navigate(`/study/list?${params.toString()}`);
+                navigate(`/list?${params.toString()}`);
               }}
           />
         </div>
