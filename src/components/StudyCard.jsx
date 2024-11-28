@@ -1,31 +1,43 @@
 import PropTypes from "prop-types";
+import { Card, CardContent, CardHeader, Typography, Chip, Avatar, IconButton } from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Stack from "@mui/material/Stack";
 
 const StudyCard = ({ study, onClick, className }) => {
   return (
-      <div onClick={onClick}
-           className={`p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer ${className}`}>
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <div
-                className="w-8 h-8 flex items-center justify-center bg-green-500 text-white rounded-full">
-              {study.username.charAt(0).toUpperCase()}
-            </div>
-            <p className="text-gray-700 font-medium">{study.username}</p>
+      <Card onClick={onClick} className={className} sx={{ cursor: "pointer", transition: "0.3s", '&:hover': { boxShadow: 6 } }}>
+        <CardHeader
+            avatar={<Avatar sx={{ width: 32, height: 32 }}>{study.username.charAt(0).toUpperCase()}</Avatar>}
+            title={
+              <Typography variant="body1" color="text.primary">
+                {study.username}
+              </Typography>
+            }
+            action={
+              <Stack direction="row" alignItems="center" spacing={1} sx={{ alignItems: "center" }}>
+                <IconButton>
+                  <FavoriteBorderIcon color="action" fontSize="small" />
+                </IconButton>
+                <Typography variant="body2" color="text.secondary">
+                  {study.likesCount}
+                </Typography>
+              </Stack>
+            }
+        />
+        <CardContent sx={{ paddingTop: 1 }}>
+          <Typography variant="subtitle1" component="div" gutterBottom fontWeight="bold">
+            {study.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            {study.content.length > 100 ? `${study.content.substring(0, 100)}...` : study.content}
+          </Typography>
+          <div>
+            {study.hashTag.split(' ').map((tag, index) => (
+                <Chip key={index} label={tag} variant="outlined" size="small" sx={{ margin: "2px" }} />
+            ))}
           </div>
-          <div className="text-gray-500">❤️ {study.likesCount}</div>
-        </div>
-        <h2 className="text-xl font-bold text-gray-800 mb-2">{study.title}</h2>
-        <p className="text-gray-600 text-sm mb-4">{study.content.length > 100
-            ? `${study.content.substring(0, 100)}...` : study.content}</p>
-        <div className="flex flex-wrap gap-2">
-          {study.hashTag.split(' ').map((tag, index) => (
-              <span key={index}
-                    className="text-sm text-white bg-gray-700 rounded-full px-3 py-1">
-            {tag}
-          </span>
-          ))}
-        </div>
-      </div>
+        </CardContent>
+      </Card>
   );
 };
 
