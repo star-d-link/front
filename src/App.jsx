@@ -1,17 +1,22 @@
-import "./App.css";
-import List from "./pages/list.jsx";
+import List from "./pages/list.jsx"
 import StudyDetail from "./pages/StudyDetail.jsx"
-import {Route, Routes} from "react-router-dom";
 import DetailedSearch from "./pages/DetailedSearch.jsx";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
 
 function App() {
-  return <>
-    <Routes>
-      <Route path="/list" element={<List />} />
-      <Route path="/study/:studyId" element={<StudyDetail />} />
-      <Route path="/detailed-search" element={<DetailedSearch />} />
-    </Routes>
-  </>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/list" element={<List />} />
+        <Route path="/study/:studyId" element={<StudyDetail />} />
+        <Route path="/detailed-search" element={<DetailedSearch />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
