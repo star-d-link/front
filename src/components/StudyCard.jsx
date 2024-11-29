@@ -32,7 +32,7 @@ const StudyCard = ({ study, onClick, className }) => {
             {study.content.length > 100 ? `${study.content.substring(0, 100)}...` : study.content}
           </Typography>
           <div>
-            {study.hashTag.split(' ').map((tag, index) => (
+            {study.hashtag.split(' ').map((tag, index) => (
                 <Chip key={index} label={tag} variant="outlined" size="small" sx={{ margin: "2px" }} />
             ))}
           </div>
@@ -48,7 +48,7 @@ StudyCard.propTypes = {
     likesCount: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
-    hashTag: PropTypes.string.isRequired,
+    hashtag: PropTypes.string.isRequired,
   }).isRequired,
   onClick: PropTypes.func,
   className: PropTypes.string,

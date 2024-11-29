@@ -5,7 +5,7 @@ import { Card, CardContent } from "@mui/material";
 import StudyHeader from "../components/StudyDetailHeader";
 import StudyContent from "../components/StudyDetailContent";
 import StudyInfo from "../components/StudyDetailInfo";
-import StudyTag from "../components/StudyDetailTag";
+import Studytag from "../components/StudyDetailTag";
 
 const StudyDetail = () => {
   const { studyId } = useParams();
@@ -34,14 +34,18 @@ const StudyDetail = () => {
   }
 
   return (
-      <Card sx={{ maxWidth: 800, margin: "auto", mt: 4, p: 2 }}>
-        <CardContent>
-          <StudyInfo isRecruit={study.isRecruit} region={study.region} isOnline={study.isOnline} headCount={study.headCount} />
-          <StudyHeader username={study.username} createDate={study.createDate} likesCount={study.likesCount} />
-          <StudyContent title={study.title} content={study.content} />
-          <StudyTag hashtag={study.hashtag} />
-        </CardContent>
-      </Card>
+      <div className="bg-gray-100 min-h-screen p-4">
+        <Card sx={{maxWidth: 800, margin: "auto", mt: 4, p: 2}}>
+          <CardContent>
+            <StudyInfo isRecruit={study.isRecruit} region={study.region}
+                       isOnline={study.isOnline} headCount={study.headCount}/>
+            <StudyHeader username={study.username} createDate={study.createDate}
+                         likesCount={study.likesCount}/>
+            <StudyContent title={study.title} content={study.content}/>
+            <Studytag hashtag={study.hashtag}/>
+          </CardContent>
+        </Card>
+      </div>
   );
 };
 
