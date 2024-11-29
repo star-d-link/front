@@ -1,33 +1,95 @@
 import { useNavigate } from "react-router-dom";
 
-const Header = ({ isMobile, toggleSidebar }) => {
+const Header = () => {
   const navigate = useNavigate();
+
   return (
-    <header className="flex justify-between items-center bg-white px-4 py-2 shadow">
-      {isMobile && (
-        <button
-          className="text-blue-500 border border-gray-300 rounded-md w-8 h-8 mr-2 flex items-center justify-center md:hidden"
-          onClick={() => toggleSidebar((prev) => !prev)} // 상태 토글
+    <header className="fixed top-0 left-0 w-full bg-white shadow z-50">
+      <div className="flex items-center justify-between px-4 py-2">
+        {/* 로고 */}
+        <h1
+          className="text-xl font-bold text-blue-500 cursor-pointer"
+          onClick={() => navigate("/")}
         >
-          ☰
+          Star-D-Link
+        </h1>
+
+        {/* 네비게이션 메뉴 */}
+        <nav className="hidden md:flex space-x-4">
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => navigate("/")}
+          >
+            홈
+          </button>
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => navigate("/list")}
+          >
+            스터디 생성/찾기
+          </button>
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => navigate("/course-review-form")}
+          >
+            리뷰 작성/찾기
+          </button>
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => navigate("/study-create")}
+          >
+            스터디 관리
+          </button>
+          <button
+            className="text-gray-700 hover:text-blue-500"
+            onClick={() => navigate("/mypage")}
+          >
+            마이페이지
+          </button>
+        </nav>
+
+        {/* 로그인 버튼 */}
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm"
+          onClick={() => navigate("/login")}
+        >
+          로그인
         </button>
-      )}
-      <div className="flex-1">
-        <input
-          type="text"
-          placeholder="스터디, 강의리뷰 찾아보기"
-          className="w-full border rounded-full px-4 py-2 text-sm placeholder-gray-400 focus:outline-none"
-        />
       </div>
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm ml-2"
-        onClick={
-          () =>
-            navigate("/login", { state: { from: window.location.pathname } }) // 로그인 후 다시 이전페이지로 돌아오도록
-        }
-      >
-        로그인
-      </button>
+
+      {/* 모바일 네비게이션 */}
+      <div className="flex md:hidden justify-around py-2 border-t">
+        <button
+          className="text-gray-700 hover:text-blue-500"
+          onClick={() => navigate("/")}
+        >
+          홈
+        </button>
+        <button
+          className="text-gray-700 hover:text-blue-500"
+          onClick={() => navigate("/create-group")}
+        >
+          스터디
+        </button>
+        <button
+          className="text-gray-700 hover:text-blue-500"
+          onClick={() => navigate("/projects")}
+        >
+          리뷰
+        </button>
+        <button
+          className="text-gray-700 hover:text-blue-500"
+          onClick={() => navigate("/lounge")}
+        >
+          스터디 관리
+        </button>
+        <button
+          className="text-gray-700 hover:text-blue-500"
+          onClick={() => navigate("/mypage")}
+        >
+          마이 페이지
+        </button>
+      </div>
     </header>
   );
 };
