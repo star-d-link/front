@@ -104,7 +104,7 @@ const List = () => {
           {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen}/>
           <div className="bg-gray-100 min-h-screen p-4">
-            <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">스터디
+            <h1 className="text-2xl font-extrabold text-gray-800 mb-8">스터디
               목록</h1>
             <div className="flex justify-center gap-6 mb-6">
               <div className="flex items-center gap-2">
