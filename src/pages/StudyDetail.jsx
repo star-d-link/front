@@ -76,7 +76,9 @@ const StudyDetail = () => {
                              likesCount={study.likesCount}/>
                 <StudyContent title={study.title} content={study.content}/>
                 <Studytag hashtag={study.hashtag}/>
-                {!study.isOnline && (<KakaoMap />)}
+                {!study.isOnline && (
+                    <KakaoMap latitude={study.latitude} longitude={study.longitude}/>
+                )}
               </CardContent>
             </Card>
           </div>
