@@ -11,7 +11,7 @@ const DetailedSearch = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-
+  ;
 
   useEffect(() => {
     const fetchStudies = async () => {
@@ -53,7 +53,7 @@ const DetailedSearch = () => {
 
   return (
       <div className="bg-gray-100 min-h-screen p-4">
-        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">해시태그 검색</h1>
+        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">스터디 목록</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {studies.length > 0 ? (
               studies.map((study) => (
