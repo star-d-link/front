@@ -6,10 +6,12 @@ import CourseReviewForm from "./component/course/Course";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import StudyMember from "./pages/StudyMember.jsx";
 
 function App() {
   return (
     <Routes>
+      <Route path="/study-member" element={<StudyMember />} />
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/list" element={<List />} />

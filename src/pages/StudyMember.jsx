@@ -8,7 +8,9 @@ import Footer from '../components/Footer';
 const StudyMember = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [studyTitle, setStudyTitle] = useState("스터디 제목");
 
+  // 초기 멤버 데이터 설정
   const [members, setMembers] = useState([
     {
       studyManageId: 1,
@@ -84,7 +86,6 @@ const StudyMember = () => {
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Sidebar */}
         <Sidebar
             isMobile={isMobile}
             toggleSidebar={isSidebarOpen}
@@ -92,52 +93,81 @@ const StudyMember = () => {
         />
 
         <div className="flex flex-col flex-1">
-          {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
           <div className="p-6 bg-gray-100 min-h-screen">
-            <h2 className="text-3xl font-bold text-center mb-6">스터디 멤버 관리</h2>
-            {members.length > 0 ? (
-                <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
-                  {members.map((member) => (
-                      <Card key={member.studyManageId} className="shadow-md">
-                        <CardContent>
-                          <Typography variant="h6" component="div" gutterBottom>
-                            이름: {member.user.username}
-                          </Typography>
-                          <Typography color="textSecondary">
-                            역할: {member.role}
-                          </Typography>
-                          <Typography color="textSecondary">
-                            상태: {member.status}
-                          </Typography>
-                        </CardContent>
-                        <CardActions className="flex justify-end">
-                          {member.status === "신청중" && (
-                              <>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={() => approveMember(member.studyManageId)}
-                                >
-                                  승인
-                                </Button>
-                                <Button
-                                    variant="outlined"
-                                    color="secondary"
-                                    onClick={() => rejectMember(member.studyManageId)}
-                                    className="ml-2"
-                                >
-                                  거절
-                                </Button>
-                              </>
-                          )}
-                        </CardActions>
-                      </Card>
-                  ))}
-                </div>
-            ) : (
-                <div className="text-center text-gray-500 mt-4">스터디 멤버가 없습니다.</div>
-            )}
+
+            <h2 className="text-4xl font-bold text-center mb-6">{studyTitle}</h2>
+
+            <section className="mb-8">
+              <h3 className="text-2xl font-semibold mb-4">승인 대기 중인 멤버</h3>
+              {members.filter((member) => member.status === '신청중').length > 0 ? (
+                  <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
+                    {members
+                    .filter((member) => member.status === '신청중')
+                    .map((member) => (
+                        <Card key={member.studyManageId} className="shadow-md">
+                          <CardContent>
+                            <Typography variant="h6" component="div" gutterBottom>
+                              이름: {member.user.username}
+                            </Typography>
+                            <Typography color="textSecondary">
+                              역할: {member.role}
+                            </Typography>
+                            <Typography color="textSecondary">
+                              상태: {member.status}
+                            </Typography>
+                          </CardContent>
+                          <CardActions className="flex justify-end">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => approveMember(member.studyManageId)}
+                            >
+                              승인
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                onClick={() => rejectMember(member.studyManageId)}
+                                className="ml-2"
+                            >
+                              거절
+                            </Button>
+                          </CardActions>
+                        </Card>
+                    ))}
+                  </div>
+              ) : (
+                  <div className="text-center text-gray-500">승인 대기 중인 멤버가 없습니다.</div>
+              )}
+            </section>
+
+            <section>
+              <h3 className="text-2xl font-semibold mb-4">참여중인 멤버</h3>
+              {members.filter((member) => member.status === '참여중').length > 0 ? (
+                  <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
+                    {members
+                    .filter((member) => member.status === '참여중')
+                    .map((member) => (
+                        <Card key={member.studyManageId} className="shadow-md">
+                          <CardContent>
+                            <Typography variant="h6" component="div" gutterBottom>
+                              이름: {member.user.username}
+                            </Typography>
+                            <Typography color="textSecondary">
+                              역할: {member.role}
+                            </Typography>
+                            <Typography color="textSecondary">
+                              상태: {member.status}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                    ))}
+                  </div>
+              ) : (
+                  <div className="text-center text-gray-500">참여중인 멤버가 없습니다.</div>
+              )}
+            </section>
           </div>
           {/* Footer */}
           <Footer />
