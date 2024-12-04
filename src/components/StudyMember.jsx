@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Card, CardActions, CardContent, Typography } from '@mui/material';
+import { Button, Card, CardActions, CardContent, Typography, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const StudyMember = ({ studyId, goBack }) => {
@@ -66,16 +67,20 @@ const StudyMember = ({ studyId, goBack }) => {
   }
 
   return (
-      <div className="p-6 bg-gray-100 min-h-screen">
-        <h2 className="text-4xl font-bold text-center mb-6">{studyTitle}</h2>
-        <Button
-            variant="outlined"
-            color="primary"
+      <div className="relative p-6 bg-gray-100 min-h-screen">
+        {/* X 버튼 */}
+        <IconButton
             onClick={goBack}
-            className="mb-4"
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+            }}
         >
-          뒤로가기
-        </Button>
+          <CloseIcon />
+        </IconButton>
+
+        <h2 className="text-4xl font-bold text-center mb-6">{studyTitle}</h2>
 
         {/* 멤버 관리 UI */}
         <section className="mb-8">

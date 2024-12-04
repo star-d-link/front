@@ -4,11 +4,14 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StudyList from "../components/StudyManagementList.jsx";
 import StudyMember from "../components/StudyMember";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import "../css/SlideAction.css"; // CSS 파일을 별도로 작성
 
 const StudyManagement = () => {
   const [currentStudyId, setCurrentStudyId] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isBack, setIsBack] = useState(false); // 뒤로가기 여부 상태
 
   // 화면 크기에 따라 모바일 여부 확인
   useEffect(() => {
@@ -36,19 +39,39 @@ const StudyManagement = () => {
           {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
 
-          {/* 메인 콘텐츠 */}
-          <div className="p-6 bg-gray-100 min-h-screen">
+          {/* 화면 전환 애니메이션 */}
+          <TransitionGroup className="transition-wrapper">
             {currentStudyId === null ? (
-                // 스터디 목록
-                <StudyList onSelectStudy={(studyId) => setCurrentStudyId(studyId)} />
+                <CSSTransition
+                    key="study-list"
+                    timeout={500}
+                    classNames={isBack ? "slide-right" : "slide"}
+                    unmountOnExit
+                >
+                  <StudyList
+                      onSelectStudy={(studyId) => {
+                        setIsBack(false); // 앞으로 가는 동작
+                        setCurrentStudyId(studyId);
+                      }}
+                  />
+                </CSSTransition>
             ) : (
-                // 멤버 관리
-                <StudyMember
-                    studyId={currentStudyId}
-                    goBack={() => setCurrentStudyId(null)}
-                />
+                <CSSTransition
+                    key="study-member"
+                    timeout={500}
+                    classNames={isBack ? "slide-right" : "slide"}
+                    unmountOnExit
+                >
+                  <StudyMember
+                      studyId={currentStudyId}
+                      goBack={() => {
+                        setIsBack(true); // 뒤로 가는 동작
+                        setCurrentStudyId(null);
+                      }}
+                  />
+                </CSSTransition>
             )}
-          </div>
+          </TransitionGroup>
 
           {/* Footer */}
           <Footer />
