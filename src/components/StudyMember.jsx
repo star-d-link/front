@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Card, CardActions, CardContent, Typography, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CircularProgress from '@mui/material/CircularProgress';
+import PropTypes from "prop-types";
 
 const StudyMember = ({ studyId, goBack }) => {
   const [loading, setLoading] = useState(false);
@@ -156,5 +157,11 @@ const StudyMember = ({ studyId, goBack }) => {
       </div>
   );
 };
+
+StudyMember.propTypes = {
+  studyId: PropTypes.number.isRequired,
+  goBack: PropTypes.func.isRequired,
+};
+
 
 export default StudyMember;

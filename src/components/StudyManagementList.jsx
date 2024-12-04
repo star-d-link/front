@@ -1,4 +1,5 @@
 import { Button, Card, CardContent, Typography } from "@mui/material";
+import PropTypes from "prop-types";
 
 const StudyManagementList = ({ onSelectStudy }) => {
   // 임시 데이터: 유저가 관리하는 스터디 목록
@@ -37,5 +38,9 @@ const StudyManagementList = ({ onSelectStudy }) => {
       </div>
   );
 };
+
+StudyManagementList.propTypes = {
+  onSelectStudy: PropTypes.func.isRequired,
+}
 
 export default StudyManagementList;
