@@ -3,16 +3,16 @@ import { Map, MapMarker, useMap } from 'react-kakao-maps-sdk';
 import PropTypes from 'prop-types';
 import '../css/KakaoMapCreate.css';
 
-function KakaoKeywordMap() {
+function KakaoKeywordMap({ onLocationSelect }) {
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [places, setPlaces] = useState([]);
-  const [searchInput, setSearchInput] = useState('이태원 맛집');
-  const [keyword, setKeyword] = useState('이태원 맛집');
+  const [searchInput, setSearchInput] = useState(""); // 검색 입력값
+  const [keyword, setKeyword] = useState(""); // 실제 검색에 사용되는 값
   const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(null); // 선택된 마커의 인덱스
 
   const markerImageSrc =
-      'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png';
+      "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png";
   const imageSize = { width: 36, height: 37 };
   const spriteSize = { width: 36, height: 691 };
 
@@ -21,42 +21,49 @@ function KakaoKeywordMap() {
   };
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setKeyword(searchInput);
+    e.preventDefault(); // 기본 새로고침 방지
+    if (!searchInput.trim()) {
+      alert("키워드를 입력하세요.");
+      return;
+    }
+    setKeyword(searchInput); // 검색어 업데이트
   };
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !keyword) return;
+
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(keyword, (data, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
         setPlaces(data);
 
         const bounds = new window.kakao.maps.LatLngBounds();
-        let newMarkers = [];
+        const newMarkers = data.map((place) => {
+          const position = new window.kakao.maps.LatLng(place.y, place.x);
+          bounds.extend(position);
 
-        for (let i = 0; i < data.length; i++) {
-          newMarkers.push({
-            position: {
-              lat: data[i].y,
-              lng: data[i].x,
-            },
-            content: data[i].place_name,
-          });
-          bounds.extend(new window.kakao.maps.LatLng(data[i].y, data[i].x));
-        }
+          return {
+            position: { lat: place.y, lng: place.x },
+            content: place.place_name,
+            roadAddress: place.road_address_name,
+            address: place.address_name,
+          };
+        });
+
         setMarkers(newMarkers);
-        setSelectedMarkerIndex(null); // 검색할 때 선택 초기화
-        map.setBounds(bounds);
+        setSelectedMarkerIndex(null); // 검색 결과 초기화
+        map.setBounds(bounds); // 결과에 맞게 지도 범위 조정
+      } else {
+        alert("검색 결과가 없습니다.");
       }
     });
   }, [map, keyword]);
 
-  const EventMarkerContainer = ({ position, content, i }) => {
+  const EventMarkerContainer = ({ position, content, roadAddress, address, i }) => {
     const map = useMap();
     const [isVisible, setIsVisible] = useState(false);
 
-    // 선택된 마커의 경우만 표시하기 위해 인덱스를 비교하여 결정
+    // 선택된 마커만 강조
     if (selectedMarkerIndex !== null && selectedMarkerIndex !== i) {
       return null;
     }
@@ -75,23 +82,28 @@ function KakaoKeywordMap() {
             }}
             onClick={(marker) => {
               map.panTo(marker.getPosition());
-              setSelectedMarkerIndex(i); // 선택된 마커의 인덱스 설정
+              setSelectedMarkerIndex(i); // 마커 선택
+              if (onLocationSelect) {
+                onLocationSelect(position.lat, position.lng, roadAddress || address);
+              }
             }}
             onMouseOver={() => setIsVisible(true)}
             onMouseOut={() => setIsVisible(false)}
         >
-          {isVisible && <div style={{ color: '#000' }}>{content}</div>}
+          {isVisible && <div style={{ color: "#000" }}>{content}</div>}
         </MapMarker>
     );
   };
 
-  // PropTypes 검증 추가
+  // PropTypes 검증
   EventMarkerContainer.propTypes = {
     position: PropTypes.shape({
       lat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       lng: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     }).isRequired,
     content: PropTypes.string.isRequired,
+    roadAddress: PropTypes.string,
+    address: PropTypes.string,
     i: PropTypes.number.isRequired,
   };
 
@@ -103,8 +115,8 @@ function KakaoKeywordMap() {
               lng: 126.9786567,
             }}
             style={{
-              width: '100%',
-              height: '500px',
+              width: "100%",
+              height: "500px",
             }}
             level={3}
             onCreate={setMap}
@@ -114,6 +126,8 @@ function KakaoKeywordMap() {
                   key={`EventMarkerContainer-${marker.position.lat}-${marker.position.lng}`}
                   position={marker.position}
                   content={marker.content}
+                  roadAddress={marker.roadAddress}
+                  address={marker.address}
                   i={i}
               />
           ))}
@@ -121,8 +135,9 @@ function KakaoKeywordMap() {
         <div id="menu_wrap" className="bg_white">
           <div className="option">
             <div>
-              <form onSubmit={handleSearchSubmit}>
-                키워드 :{' '}
+              {/* 검색 UI에서 <form> 대신 <div> 사용 */}
+              <div onSubmit={handleSearchSubmit}>
+                키워드 :{" "}
                 <input
                     type="text"
                     value={searchInput}
@@ -130,8 +145,10 @@ function KakaoKeywordMap() {
                     id="keyword"
                     size={15}
                 />
-                <button type="submit">검색하기</button>
-              </form>
+                <button type="button" onClick={handleSearchSubmit}>
+                  검색하기
+                </button>
+              </div>
             </div>
           </div>
           <hr />
@@ -139,7 +156,7 @@ function KakaoKeywordMap() {
             {places.map((item, i) => (
                 <li
                     key={i}
-                    className={`item ${i === selectedMarkerIndex ? 'selected' : ''}`}
+                    className={`item ${i === selectedMarkerIndex ? "selected" : ""}`}
                     onClick={() => {
                       map.panTo(
                           new window.kakao.maps.LatLng(
@@ -147,7 +164,14 @@ function KakaoKeywordMap() {
                               markers[i].position.lng
                           )
                       );
-                      setSelectedMarkerIndex(i); // 리스트 항목 클릭 시 선택된 마커의 인덱스 설정
+                      setSelectedMarkerIndex(i); // 선택된 마커의 인덱스 설정
+                      if (onLocationSelect) {
+                        onLocationSelect(
+                            markers[i].position.lat,
+                            markers[i].position.lng,
+                            item.road_address_name || item.address_name
+                        );
+                      }
                     }}
                 >
                   <span className={`markerbg marker_${i + 1}`}></span>
@@ -166,7 +190,6 @@ function KakaoKeywordMap() {
                 </li>
             ))}
           </ul>
-          <div id="pagination"></div>
         </div>
       </div>
   );
