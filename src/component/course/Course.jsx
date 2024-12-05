@@ -1,4 +1,8 @@
+import { Height } from "@mui/icons-material";
+import { height } from "@mui/system";
 import React, { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Quill 기본 스타일 추가
 
 const CourseReviewForm = () => {
   const [review, setReview] = useState({
@@ -43,9 +47,7 @@ const CourseReviewForm = () => {
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="flex items-center space-x-4 mb-4">
           {/* 제목 */}
-          <label className="text-base font-medium text-gray-700 w-20">
-            제목
-          </label>
+          <label className="text-base font-medium text-gray-700 w-20">제목</label>
           <input
             type="text"
             name="title"
@@ -58,9 +60,7 @@ const CourseReviewForm = () => {
 
         <div className="flex items-center space-x-4 mb-4">
           {/* 이름 */}
-          <label className="text-base font-medium text-gray-700 w-20">
-            이름
-          </label>
+          <label className="text-base font-medium text-gray-700 w-20">이름</label>
           <input
             type="text"
             name="name"
@@ -74,7 +74,7 @@ const CourseReviewForm = () => {
         {/* 평점 */}
         <div>
           <div className="flex items-center space-x-3">
-            <label className="text-base font-medium text-gray-700" >평점</label>
+            <label className="text-base font-medium text-gray-700">평점</label>
             <div className="flex space-x-3">
               {[...Array(10)].map((_, i) => (
                 <button
@@ -92,24 +92,24 @@ const CourseReviewForm = () => {
               ))}
             </div>
           </div>
-
-          <p className="text-sm text-gray-500 mt-3">
-            선택한 평점: {review.rating}
-          </p>
+          <p className="text-sm text-gray-500 mt-3">선택한 평점: {review.rating}</p>
         </div>
 
-        {/* 내용 */}
         <div>
-  
-          <textarea
-            name="content"
-            onChange={onChange}
-            required
-            placeholder="내용을 입력하세요"
-            className="w-full border border-gray-300 rounded-lg p-4 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            rows="6"
-          />
-        </div>
+  <label className="block text-base font-medium mb-2 text-gray-700">내용</label>
+  <div className="relative" style={{ height: "300px" }}>
+    <ReactQuill
+      theme="snow"
+      value={review.content}
+      onChange={(content) =>
+        setReview((prev) => ({ ...prev, content }))
+      }
+      className="bg-white border border-gray-300 rounded-md"
+      style={{ height: "100%", overflow: "hidden" }} // 부모 div의 크기와 맞추기
+    />
+  </div>
+</div>
+
 
         {/* 해시태그 */}
         <div>
@@ -127,9 +127,7 @@ const CourseReviewForm = () => {
 
         {/* 파일 업로드 */}
         <div>
-          <label className="block text-base font-medium mb-2 text-gray-700">
-            파일 업로드
-          </label>
+          <label className="block text-base font-medium mb-2 text-gray-700">파일 업로드</label>
           <input
             type="file"
             name="files"
