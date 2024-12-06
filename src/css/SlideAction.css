@@ -1,0 +1,45 @@
+.slide-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.slide-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.slide-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+.slide-exit-active {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* 오른쪽에서 왼쪽으로 */
+.slide-right-enter {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.slide-right-enter-active {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.slide-right-exit {
+  transform: translateX(0);
+  opacity: 1;
+}
+.slide-right-exit-active {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.transition-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}

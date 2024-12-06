@@ -6,14 +6,15 @@ import CourseReviewForm from "./component/course/Course";
 import { Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import StudyManagement from "./pages/StudyManagement.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import CourseDetail from "./component/course/CourseDetail.jsx";
 
-
 function App() {
   return (
     <Routes>
+      <Route path="/study-manage" element={<StudyManagement />} />
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/list" element={<List />} />
