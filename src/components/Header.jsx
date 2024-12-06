@@ -1,11 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
+  const { isAuthenticated, logout } = useAuth();
+
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow z-50">
-      <div className="flex items-center justify-between px-4 py-2">
+      <div className="max-w-screen-lg mx-auto flex items-center justify-between h-16 px-4">
         {/* 로고 */}
         <h1
           className="text-xl font-bold text-blue-500 cursor-pointer"
@@ -48,13 +56,22 @@ const Header = () => {
           </button>
         </nav>
 
-        {/* 로그인 버튼 */}
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm"
-          onClick={() => navigate("/login")}
-        >
-          로그인
-        </button>
+        {/* 로그인/로그아웃 버튼 */}
+        {isAuthenticated ? (
+          <button
+            className="bg-gray-500 text-white px-4 py-2 rounded-full text-sm hover:bg-gray-600"
+            onClick={handleLogout}
+          >
+            로그아웃
+          </button>
+        ) : (
+          <button
+            className="bg-orange-500 text-white px-4 py-2 rounded-full text-sm hover:bg-orange-600"
+            onClick={() => navigate("/login")}
+          >
+            로그인
+          </button>
+        )}
       </div>
 
       {/* 모바일 네비게이션 */}
