@@ -28,6 +28,15 @@ const Login = () => {
       setError("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     }
   };
+
+  const onNaverLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/naver";
+  };
+
+  const onGoogleLogin = () => {
+    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       {/* 로그인 박스 */}
@@ -88,7 +97,10 @@ const Login = () => {
 
         {/* 소셜 로그인 */}
         <div className="flex flex-col space-y-2">
-          <button className="w-full flex items-center justify-center bg-gray-100 border rounded-lg py-2 hover:bg-gray-200">
+          <button
+            className="w-full flex items-center justify-center bg-gray-100 border rounded-lg py-2 hover:bg-gray-200"
+            onClick={onGoogleLogin}
+          >
             <img src={googleLogo} alt="Google" className="w-5 h-5 mr-2" />
             <span className="text-sm font-medium text-gray-700">
               구글로 로그인
@@ -106,7 +118,10 @@ const Login = () => {
             </span>
           </button>
 
-          <button className="w-full flex items-center justify-center bg-green-500 text-white border rounded-lg py-2 hover:bg-green-600">
+          <button
+            className="w-full flex items-center justify-center bg-green-500 text-white border rounded-lg py-2 hover:bg-green-600"
+            onClick={onNaverLogin}
+          >
             <img src={naverLogo} alt="Naver" className="w-5 h-5 mr-2" />
             <span className="text-sm font-medium">네이버로 로그인</span>
           </button>
