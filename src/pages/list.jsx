@@ -3,7 +3,7 @@ import axios from "axios";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "../components/Sidebar.jsx";
+import Sidebar from "../components/Sidebar.jsx"
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 
