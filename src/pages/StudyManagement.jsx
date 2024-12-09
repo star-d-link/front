@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StudyList from "../components/StudyManagementList.jsx";
@@ -33,13 +32,6 @@ const StudyManagement = () => {
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Sidebar */}
-        <Sidebar
-            isMobile={isMobile}
-            toggleSidebar={isSidebarOpen}
-            setSidebarOpen={setIsSidebarOpen}
-        />
-
         <div className="flex flex-col flex-1">
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
 

@@ -9,7 +9,6 @@ import StudyContent from "../components/StudyDetailContent";
 import StudyInfo from "../components/StudyDetailInfo";
 import Studytag from "../components/StudyDetailTag";
 
-import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import KakaoMap from "../components/KakaoMap.jsx";
@@ -88,12 +87,6 @@ const StudyDetail = () => {
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Sidebar */}
-        <Sidebar
-            isMobile={isMobile}
-            toggleSidebar={isSidebarOpen}
-            setSidebarOpen={setIsSidebarOpen}
-        />
 
         <div className="flex flex-col flex-1">
           {/* Header */}

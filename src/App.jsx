@@ -10,10 +10,11 @@ import StudyManagement from "./pages/StudyManagement.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import CourseDetail from "./component/course/CourseDetail.jsx";
-
+import StudySchedule from "./pages/StudySchedule.jsx";
 function App() {
   return (
     <Routes>
+      <Route path="/study-schedule" element={<StudySchedule />} />
       <Route path="/study-manage" element={<StudyManagement />} />
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />

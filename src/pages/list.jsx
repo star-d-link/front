@@ -3,7 +3,6 @@ import axios from "axios";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "../components/Sidebar.jsx";
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 
@@ -30,6 +29,7 @@ const List = () => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   useEffect(() => {
     const fetchStudies = async () => {
       try {
@@ -93,13 +93,6 @@ const List = () => {
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Sidebar */}
-        <Sidebar
-            isMobile={isMobile}
-            toggleSidebar={isSidebarOpen}
-            setSidebarOpen={setIsSidebarOpen}
-        />
-
         <div className="flex flex-col flex-1">
           {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen}/>
