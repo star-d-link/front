@@ -18,6 +18,9 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
         return;
       }
+      
+      console.log("현재 사용자:", user);
+      console.log("현재 토큰:", token);
 
       try {
         const response = await ApiClient.get("/user/me");

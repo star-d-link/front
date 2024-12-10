@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import ApiClient from "../auth/apiClient";
 import { Card, CardContent, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -37,7 +37,7 @@ const StudyDetail = () => {
   useEffect(() => {
     const fetchStudy = async () => {
       try {
-        const response = await axios.get(
+        const response = await ApiClient.get(
             `http://localhost:8080/study/${studyId}`
         );
         setStudy(response.data.data);

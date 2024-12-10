@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ApiClient from "../auth/apiClient";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import StudyList from "../components/StudyManagementList.jsx";

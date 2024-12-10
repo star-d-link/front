@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ApiClient from "../auth/apiClient";
 
 const StudySchedule = () => {
   const [schedules, setSchedules] = useState([]);

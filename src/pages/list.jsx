@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import ApiClient from "../auth/apiClient";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
 
 const List = () => {
   const [studies, setStudies] = useState([]);
@@ -50,12 +49,14 @@ const List = () => {
           requestParams.isRecruit = isRecruit;
         }
 
-        const response = await axios.get("http://localhost:8080/study/list", { params: requestParams });
+        const response = await ApiClient.get("/study/list", { params: requestParams });
         setStudies(response.data.data.content || []);
         setTotalPages(response.data.data.totalPages || 1);
-      } catch {
+      } catch (error) {
+        console.error("스터디 데이터를 가져오는 중 오류 발생:", error);
         setError("스터디 목록을 불러오는 중 문제가 발생했습니다.");
       }
+
     };
 
     fetchStudies().catch((e) => {
@@ -90,6 +91,11 @@ const List = () => {
     params.set("page", 0);
     navigate(`/list?${params.toString()}`);
   };
+
+  const handleCreateStudy = () => {
+    navigate("/study-create");
+  };
+
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
@@ -152,6 +158,13 @@ const List = () => {
                     목록이 없습니다.</div>
               )}
             </div>
+
+            <button
+                onClick={handleCreateStudy}
+                className="fixed bottom-6 right-6 bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
+            >
+              스터디 생성
+            </button>
             <div className="flex justify-center mt-8">
               <Pagination
                   currentPage={currentPage}
@@ -165,7 +178,6 @@ const List = () => {
               />
             </div>
           </div>
-          <Footer/>
         </div>
       </div>
 
