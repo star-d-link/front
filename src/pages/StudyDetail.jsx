@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ApiClient from "../auth/apiClient";
 import { Card, CardContent, Button } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -10,17 +10,19 @@ import StudyInfo from "../components/StudyDetailInfo";
 import Studytag from "../components/StudyDetailTag";
 
 import Header from "../components/Header";
-import Footer from "../components/Footer";
 import KakaoMap from "../components/KakaoMap.jsx";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 const StudyDetail = () => {
   const { studyId } = useParams();
+  const { user } = useAuth();
   const [study, setStudy] = useState(null);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -54,8 +56,8 @@ const StudyDetail = () => {
   const handleLike = async () => {
     try {
       const response = isLiked
-          ? await axios.delete(`http://localhost:8080/study/${studyId}/like`)
-          : await axios.post(`http://localhost:8080/study/${studyId}/like`);
+          ? await ApiClient.delete(`http://localhost:8080/study/${studyId}/like`)
+          : await ApiClient.post(`http://localhost:8080/study/${studyId}/like`);
       if (response.status === 200) {
         setIsLiked(!isLiked);
       }
@@ -66,7 +68,7 @@ const StudyDetail = () => {
   // 스터디 신청
   const handleApply = async () => {
     try {
-      const response = await axios.post(
+      const response = await ApiClient.post(
           `http://localhost:8080/study/${studyId}/apply`
       );
       if (response.status === 200) {
@@ -74,6 +76,28 @@ const StudyDetail = () => {
       }
     } catch (e) {
       console.error("스터디 신청 중 문제가 발생했습니다.", e);
+    }
+  };
+
+  const isOwner = user && study && user.username === study.username;
+
+  console.log("현재 사용자:", user ? user.username : "로그인되지 않음");
+  console.log("작성자:", study ? study.username : "데이터 로딩 중");
+
+
+  const handleEdit = () => {
+    navigate(`/study-edit/${studyId}`); // 수정 페이지로 이동
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      try {
+        await ApiClient.delete(`/study/${studyId}`);
+        alert("스터디가 삭제되었습니다.");
+        navigate("/list"); // 삭제 후 목록 페이지로 이동
+      } catch {
+        alert("스터디 삭제 중 문제가 발생했습니다.");
+      }
     }
   };
 
@@ -128,10 +152,20 @@ const StudyDetail = () => {
                     스터디 신청
                   </Button>
                 </div>
+
               </CardContent>
             </Card>
+            {isOwner && (
+                <div className="flex gap-4">
+                  <Button variant="outlined" color="primary" onClick={handleEdit}>
+                    수정
+                  </Button>
+                  <Button variant="contained" color="secondary" onClick={handleDelete}>
+                    삭제
+                  </Button>
+                </div>
+            )}
           </div>
-          <Footer />
         </div>
       </div>
   );
