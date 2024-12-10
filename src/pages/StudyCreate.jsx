@@ -1,9 +1,13 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ReactQuill from "react-quill";
 import KakaoMapCreate from "../components/KakaoMapCreate.jsx";
 import "react-quill/dist/quill.snow.css";
-
+import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 const StudyCreate = () => {
+  const { user, loading } = useAuth(); // 사용자 정보와 로딩 상태 가져오기
+  const navigate = useNavigate();
+
   // 스터디 정보 상태
   const [formData, setFormData] = useState({
     title: "",
@@ -17,8 +21,8 @@ const StudyCreate = () => {
     longitude: null,
   });
 
-  // Quill 에디터 값 상태
   const [quillContent, setQuillContent] = useState("");
+
   const modules = useMemo(() => {
     return {
       toolbar: {
@@ -31,8 +35,17 @@ const StudyCreate = () => {
           [{ align: [] }, "link", "image"],
         ],
       },
+    };
+  }, []);
+
+  // 인증 상태 및 로딩 처리
+  useEffect(() => {
+    if (!loading && !user) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
     }
-  }, [])
+  }, [loading, user, navigate]);
+
   // KakaoMap에서 좌표 업데이트
   const handleMapUpdate = (latitude, longitude, address) => {
     const region = address.split(/[\s,]/)[0];
@@ -61,12 +74,18 @@ const StudyCreate = () => {
     e.preventDefault();
     const requestData = {
       ...formData,
-      content: quillContent, // Quill에서 작성된 내용 추가
+      content: quillContent,
     };
     console.log("스터디 생성 데이터:", requestData);
     // 여기에 API 요청 로직 추가
   };
 
+  // 로딩 상태 시 로딩 메시지 렌더링
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // 렌더링
   return (
       <div className="p-6 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">스터디 모집글 작성</h1>
@@ -102,8 +121,7 @@ const StudyCreate = () => {
 
           {/* 해시태그 */}
           <div>
-            <label htmlFor="hashtag"
-                   className="block text-lg font-semibold mb-2">
+            <label htmlFor="hashtag" className="block text-lg font-semibold mb-2">
               해시태그
             </label>
             <input
@@ -119,8 +137,7 @@ const StudyCreate = () => {
 
           {/* 모집 인원 */}
           <div>
-            <label htmlFor="headCount"
-                   className="block text-lg font-semibold mb-2">
+            <label htmlFor="headCount" className="block text-lg font-semibold mb-2">
               모집 인원
             </label>
             <input
@@ -160,7 +177,6 @@ const StudyCreate = () => {
                 )}
               </div>
           )}
-
 
           {/* 제출 버튼 */}
           <button
