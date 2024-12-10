@@ -4,11 +4,12 @@ import KakaoMapCreate from "../components/KakaoMapCreate.jsx";
 import "react-quill/dist/quill.snow.css";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import ApiClient from "../auth/apiClient";
+
 const StudyCreate = () => {
   const { user, loading } = useAuth(); // 사용자 정보와 로딩 상태 가져오기
   const navigate = useNavigate();
 
-  // 스터디 정보 상태
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -23,22 +24,19 @@ const StudyCreate = () => {
 
   const [quillContent, setQuillContent] = useState("");
 
-  const modules = useMemo(() => {
-    return {
-      toolbar: {
-        container: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike"],
-          ["blockquote"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          [{ color: [] }, { background: [] }],
-          [{ align: [] }, "link", "image"],
-        ],
-      },
-    };
-  }, []);
+  const modules = useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }, "link", "image"],
+      ],
+    },
+  }), []);
 
-  // 인증 상태 및 로딩 처리
   useEffect(() => {
     if (!loading && !user) {
       alert("로그인이 필요합니다.");
@@ -46,41 +44,52 @@ const StudyCreate = () => {
     }
   }, [loading, user, navigate]);
 
-  // KakaoMap에서 좌표 업데이트
   const handleMapUpdate = (latitude, longitude, address) => {
     const region = address.split(/[\s,]/)[0];
     setFormData((prevData) => ({
       ...prevData,
-      latitude,
-      longitude,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
       region,
     }));
   };
 
-  // 입력 값 변경 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  // Boolean 값 변경 핸들러
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
-    setFormData({ ...formData, [name]: checked });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: checked,
+    }));
   };
 
-  // 제출 핸들러
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const requestData = {
       ...formData,
       content: quillContent,
     };
-    console.log("스터디 생성 데이터:", requestData);
-    // 여기에 API 요청 로직 추가
+    console.log("요청 데이터:", requestData); // 확인용 로그
+
+
+    try {
+      const response = await ApiClient.post("/study/create", requestData);
+      alert(response.data.message || "스터디가 성공적으로 생성되었습니다.");
+      navigate("/list"); // 생성 후 스터디 목록 페이지로 이동
+    } catch (error) {
+      console.error(error);
+      alert("스터디 생성 중 오류가 발생했습니다.");
+    }
   };
 
-  // 로딩 상태 시 로딩 메시지 렌더링
   if (loading) {
     return <div>Loading...</div>;
   }
