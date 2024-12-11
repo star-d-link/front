@@ -38,11 +38,12 @@ const StudyCreate = () => {
   }), []);
 
   useEffect(() => {
-    if (!loading && !user) {
+    const token = localStorage.getItem("token");
+    if (!token) {
       alert("로그인이 필요합니다.");
-      navigate("/login");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
     }
-  }, [loading, user, navigate]);
+  }, [navigate]);
 
   const handleMapUpdate = (latitude, longitude, address) => {
     const region = address.split(/[\s,]/)[0];

@@ -15,36 +15,37 @@ import { useAuth } from "../auth/AuthContext.jsx";
 
 const StudyDetail = () => {
   const { studyId } = useParams();
-  const { user } = useAuth();
+  const { user } = useAuth(); // 현재 로그인 사용자 정보
   const [study, setStudy] = useState(null);
   const [error, setError] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
+  const navigate = useNavigate();
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const navigate = useNavigate();
 
+  // 화면 크기에 따라 모바일 여부 확인
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) setIsSidebarOpen(false); // 데스크톱으로 전환 시 Sidebar 닫기
+      if (window.innerWidth >= 768) setIsSidebarOpen(false);
     };
 
-    handleResize(); // 초기 렌더링 시 실행
+    handleResize();
     window.addEventListener("resize", handleResize);
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 스터디 정보 가져오기
   useEffect(() => {
     const fetchStudy = async () => {
       try {
-        const response = await ApiClient.get(
-            `http://localhost:8080/study/${studyId}`
-        );
+        const response = await ApiClient.get(`/study/${studyId}`);
         setStudy(response.data.data);
         setIsLiked(response.data.data.isLiked); // 좋아요 상태 설정
-      } catch {
+      } catch (error) {
+        console.error("스터디 정보를 가져오는 중 오류 발생:", error);
         setError("스터디 정보를 불러오는 중 문제가 발생했습니다.");
       }
     };
@@ -52,41 +53,40 @@ const StudyDetail = () => {
     fetchStudy();
   }, [studyId]);
 
-  // 좋아요
+  // 좋아요 기능
   const handleLike = async () => {
     try {
       const response = isLiked
-          ? await ApiClient.delete(`http://localhost:8080/study/${studyId}/like`)
-          : await ApiClient.post(`http://localhost:8080/study/${studyId}/like`);
+          ? await ApiClient.delete(`/study/${studyId}/like`)
+          : await ApiClient.post(`/study/${studyId}/like`);
+
       if (response.status === 200) {
         setIsLiked(!isLiked);
+        setStudy((prev) => ({
+          ...prev,
+          likesCount: isLiked ? prev.likesCount - 1 : prev.likesCount + 1,
+        }));
       }
-    } catch (e) {
-      console.error("좋아요 기능에 문제가 발생했습니다.", e);
+    } catch (error) {
+      console.error("좋아요 기능 처리 중 오류 발생:", error);
     }
   };
-  // 스터디 신청
+
+  // 스터디 신청 기능
   const handleApply = async () => {
     try {
-      const response = await ApiClient.post(
-          `http://localhost:8080/study/${studyId}/apply`
-      );
+      const response = await ApiClient.post(`/study/${studyId}/apply`);
       if (response.status === 200) {
         alert("스터디에 성공적으로 신청되었습니다.");
       }
-    } catch (e) {
-      console.error("스터디 신청 중 문제가 발생했습니다.", e);
+    } catch (error) {
+      console.error("스터디 신청 중 오류 발생:", error);
     }
   };
 
-  const isOwner = user && study && user.username === study.username;
-
-  console.log("현재 사용자:", user ? user.username : "로그인되지 않음");
-  console.log("작성자:", study ? study.username : "데이터 로딩 중");
-
-
+  // 수정 및 삭제 핸들러
   const handleEdit = () => {
-    navigate(`/study-edit/${studyId}`); // 수정 페이지로 이동
+    navigate(`/study-edit/${studyId}`);
   };
 
   const handleDelete = async () => {
@@ -94,26 +94,27 @@ const StudyDetail = () => {
       try {
         await ApiClient.delete(`/study/${studyId}`);
         alert("스터디가 삭제되었습니다.");
-        navigate("/list"); // 삭제 후 목록 페이지로 이동
-      } catch {
+        navigate("/list");
+      } catch (error) {
         alert("스터디 삭제 중 문제가 발생했습니다.");
+        console.error("삭제 중 오류 발생:", error);
       }
     }
   };
 
+  const isOwner = user && study && user.username === study.username;
+
   if (error) {
-    return <div>{error}</div>;
+    return <div className="text-center text-red-500">{error}</div>;
   }
 
   if (!study) {
-    return <div>스터디 정보를 찾을 수 없습니다.</div>;
+    return <div className="text-center">스터디 정보를 불러오는 중입니다...</div>;
   }
 
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-
         <div className="flex flex-col flex-1">
-          {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
           <div className="bg-gray-100 min-h-screen p-4">
             <Card className="max-w-2xl mx-auto mt-4 p-4">
@@ -152,11 +153,10 @@ const StudyDetail = () => {
                     스터디 신청
                   </Button>
                 </div>
-
               </CardContent>
             </Card>
             {isOwner && (
-                <div className="flex gap-4">
+                <div className="flex gap-4 justify-center mt-4">
                   <Button variant="outlined" color="primary" onClick={handleEdit}>
                     수정
                   </Button>

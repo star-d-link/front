@@ -93,8 +93,15 @@ const List = () => {
   };
 
   const handleCreateStudy = () => {
-    navigate("/study-create");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
+      return;
+    }
+    navigate("/study-create"); // 인증이 되어 있다면 스터디 생성 페이지로 이동
   };
+
 
 
   return (

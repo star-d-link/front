@@ -84,7 +84,7 @@ const Header = () => {
         </button>
         <button
           className="text-gray-700 hover:text-blue-500"
-          onClick={() => navigate("/create-group")}
+          onClick={() => navigate("/list")}
         >
           스터디
         </button>
