@@ -56,7 +56,6 @@ const StudyManagement = () => {
               )}
             </AnimatePresence>
           </div>
-          <Footer />
         </div>
       </div>
   );
