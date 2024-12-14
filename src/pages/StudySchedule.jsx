@@ -1,208 +1,212 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import {useParams} from "react-router-dom";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
 import ApiClient from "../auth/apiClient";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
-const StudySchedule = () => {
+
+const ScheduleManagement = () => {
+  const { studyId } = useParams();
   const [schedules, setSchedules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentSchedule, setCurrentSchedule] = useState(null);
   const [newSchedule, setNewSchedule] = useState({
-    studyId: 1, // 임시로 설정 (백엔드 연동 시 수정 필요)
-    scheduleTitle: "",
-    scheduleContent: "",
-    scheduleDate: "",
-    time: "",
+    title: "",
+    content: "",
+    start: "",
+    end: "",
     location: "",
-    isRecurring: false,
-    recurrenceType: "DAILY", // DAILY, WEEKLY, MONTHLY 등 반복 타입
-    recurrenceCount: 0, // 반복 횟수
   });
 
-  // 일정 추가
-  const handleAddSchedule = () => {
-    const { scheduleTitle, scheduleContent, scheduleDate, time } = newSchedule;
+  // 스케줄 목록 불러오기
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      setLoading(true);
+      setError(null);
 
-    if (!scheduleTitle || !scheduleContent || !scheduleDate || !time) {
-      alert("모든 필드를 입력하세요!");
-      return;
-    }
-
-    const fullScheduleDate = `${scheduleDate}T${time}`;
-    const formattedSchedule = {
-      ...newSchedule,
-      scheduleDate: fullScheduleDate, // 날짜와 시간을 합쳐 ISO 형식으로 저장
-      id: Date.now(),
+      try {
+        const response = await ApiClient.get(`/study/${studyId}/schedule`);
+        setSchedules(response.data.data || []);
+      } catch (err) {
+        console.error("스케줄 조회 중 오류 발생:", err);
+        setError("스케줄을 불러오는 중 문제가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setSchedules([...schedules, formattedSchedule]);
+    fetchSchedules();
+  }, [studyId]);
+
+  const handleDateClick = (info) => {
     setNewSchedule({
-      studyId: 1,
-      scheduleTitle: "",
-      scheduleContent: "",
-      scheduleDate: "",
-      time: "",
-      location: "",
-      isRecurring: false,
-      recurrenceType: "DAILY",
-      recurrenceCount: 0,
+      ...newSchedule,
+      start: info.dateStr,
+      end: info.dateStr,
     });
+    setDialogOpen(true);
   };
 
-  // 일정 삭제
-  const handleDeleteSchedule = (id) => {
-    setSchedules(schedules.filter((schedule) => schedule.id !== id));
+  const handleEventClick = (clickInfo) => {
+    const schedule = schedules.find(
+        (item) => item.scheduleId === Number(clickInfo.event.id)
+    );
+    setCurrentSchedule(schedule);
+    setNewSchedule({
+      title: schedule.scheduleTitle,
+      content: schedule.scheduleContent,
+      start: schedule.scheduleDate,
+      end: schedule.scheduleDate,
+      location: schedule.location,
+    });
+    setDialogOpen(true);
   };
 
-  // 입력값 변경 핸들러
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const inputValue = type === "checkbox" ? checked : value;
-    setNewSchedule({ ...newSchedule, [name]: inputValue });
+  const handleSaveSchedule = async () => {
+    try {
+      if (currentSchedule) {
+        // 수정 요청
+        await ApiClient.put(
+            `/study/${studyId}/schedule/update-single/${currentSchedule.scheduleId}`,
+            {
+              scheduleTitle: newSchedule.title,
+              scheduleContent: newSchedule.content,
+              scheduleDate: newSchedule.start,
+              location: newSchedule.location,
+            }
+        );
+      } else {
+        // 추가 요청
+        await ApiClient.post(`/study/${studyId}/schedule/add`, {
+          scheduleTitle: newSchedule.title,
+          scheduleContent: newSchedule.content,
+          scheduleDate: newSchedule.start,
+          location: newSchedule.location,
+        });
+      }
+      setDialogOpen(false);
+      setNewSchedule({ title: "", content: "", start: "", end: "", location: "" });
+      setCurrentSchedule(null);
+
+      // 스케줄 다시 불러오기
+      const response = await ApiClient.get(`/study/${studyId}/schedule`);
+      setSchedules(response.data.data || []);
+    } catch (err) {
+      console.error("스케줄 저장 중 오류 발생:", err);
+      setError("스케줄 저장 중 문제가 발생했습니다.");
+    }
+  };
+
+  const handleDeleteSchedule = async () => {
+    try {
+      if (currentSchedule) {
+        await ApiClient.delete(
+            `/study/${studyId}/schedule/${currentSchedule.scheduleId}/delete`
+        );
+        setDialogOpen(false);
+        setNewSchedule({ title: "", content: "", start: "", end: "", location: "" });
+        setCurrentSchedule(null);
+
+        // 스케줄 다시 불러오기
+        const response = await ApiClient.get(`/study/${studyId}/schedule`);
+        setSchedules(response.data.data || []);
+      }
+    } catch (err) {
+      console.error("스케줄 삭제 중 오류 발생:", err);
+      setError("스케줄 삭제 중 문제가 발생했습니다.");
+    }
   };
 
   return (
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">스터디 일정 관리</h1>
+      <div className="p-6 bg-gray-100 min-h-screen">
+        {loading ? (
+            <div>로딩 중...</div>
+        ) : error ? (
+            <div className="text-red-500">{error}</div>
+        ) : (
+            <FullCalendar
+                plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                initialView="dayGridMonth"
+                selectable={true}
+                events={schedules.map((schedule) => ({
+                  id: schedule.scheduleId,
+                  title: schedule.scheduleTitle,
+                  start: schedule.scheduleDate,
+                  end: schedule.scheduleDate,
+                }))}
+                dateClick={handleDateClick}
+                eventClick={handleEventClick}
+            />
+        )}
 
-        {/* 일정 추가 폼 */}
-        <div className="mb-6 space-y-4">
-          <div>
-            <label className="block text-lg font-semibold mb-1">일정 제목</label>
-            <input
-                type="text"
-                name="scheduleTitle"
-                value={newSchedule.scheduleTitle}
-                onChange={handleInputChange}
-                placeholder="일정 제목을 입력하세요"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <DialogTitle>
+            {currentSchedule ? "스케줄 수정" : "스케줄 추가"}
+          </DialogTitle>
+          <DialogContent>
+            <TextField
+                label="제목"
+                value={newSchedule.title}
+                onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, title: e.target.value })
+                }
+                fullWidth
+                margin="dense"
             />
-          </div>
-          <div>
-            <label className="block text-lg font-semibold mb-1">일정 내용</label>
-            <textarea
-                name="scheduleContent"
-                value={newSchedule.scheduleContent}
-                onChange={handleInputChange}
-                placeholder="일정 내용을 입력하세요"
-                rows={3}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            <TextField
+                label="내용"
+                value={newSchedule.content}
+                onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, content: e.target.value })
+                }
+                fullWidth
+                margin="dense"
             />
-          </div>
-          <div className="flex space-x-4">
-            <div className="flex-1">
-              <label className="block text-lg font-semibold mb-1">날짜</label>
-              <input
-                  type="date"
-                  name="scheduleDate"
-                  value={newSchedule.scheduleDate}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-lg font-semibold mb-1">시간</label>
-              <input
-                  type="time"
-                  name="time"
-                  value={newSchedule.time}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-lg font-semibold mb-1">장소</label>
-            <input
-                type="text"
-                name="location"
+            <TextField
+                label="위치"
                 value={newSchedule.location}
-                onChange={handleInputChange}
-                placeholder="장소를 입력하세요 (선택 사항)"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, location: e.target.value })
+                }
+                fullWidth
+                margin="dense"
             />
-          </div>
-
-          {/* 반복 일정 옵션 */}
-          <div>
-            <label className="flex items-center space-x-2">
-              <input
-                  type="checkbox"
-                  name="isRecurring"
-                  checked={newSchedule.isRecurring}
-                  onChange={handleInputChange}
-                  className="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-              />
-              <span>반복 일정</span>
-            </label>
-            {newSchedule.isRecurring && (
-                <div className="mt-4 space-y-2">
-                  <div>
-                    <label className="block text-lg font-semibold mb-1">반복 주기</label>
-                    <select
-                        name="recurrenceType"
-                        value={newSchedule.recurrenceType}
-                        onChange={handleInputChange}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="DAILY">매일</option>
-                      <option value="WEEKLY">매주</option>
-                      <option value="MONTHLY">매월</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-lg font-semibold mb-1">반복 횟수</label>
-                    <input
-                        type="number"
-                        name="recurrenceCount"
-                        value={newSchedule.recurrenceCount}
-                        onChange={handleInputChange}
-                        placeholder="반복 횟수"
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
+            <TextField
+                label="시작 날짜"
+                type="datetime-local"
+                value={newSchedule.start}
+                onChange={(e) =>
+                    setNewSchedule({ ...newSchedule, start: e.target.value })
+                }
+                fullWidth
+                margin="dense"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogOpen(false)}>취소</Button>
+            {currentSchedule && (
+                <Button onClick={handleDeleteSchedule} color="secondary">
+                  삭제
+                </Button>
             )}
-          </div>
-          <button
-              onClick={handleAddSchedule}
-              className="w-full py-3 text-lg font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
-          >
-            일정 추가
-          </button>
-        </div>
-
-        {/* 일정 리스트 */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-semibold mb-4">일정 목록</h2>
-          {schedules.length > 0 ? (
-              schedules.map((schedule) => (
-                  <div
-                      key={schedule.id}
-                      className="p-4 bg-gray-100 border border-gray-300 rounded-lg flex justify-between items-center"
-                  >
-                    <div>
-                      <h3 className="text-xl font-bold">{schedule.scheduleTitle}</h3>
-                      <p className="text-sm text-gray-500">
-                        {schedule.scheduleDate} <br />
-                        장소: {schedule.location || "미정"}
-                      </p>
-                      {schedule.isRecurring && (
-                          <p className="text-sm text-gray-500">
-                            반복: {schedule.recurrenceType} ({schedule.recurrenceCount}회)
-                          </p>
-                      )}
-                    </div>
-                    <button
-                        onClick={() => handleDeleteSchedule(schedule.id)}
-                        className="px-4 py-2 text-sm font-semibold text-red-500 bg-white border border-red-500 rounded-lg hover:bg-red-500 hover:text-white"
-                    >
-                      삭제
-                    </button>
-                  </div>
-              ))
-          ) : (
-              <p className="text-center text-gray-500">등록된 일정이 없습니다.</p>
-          )}
-        </div>
+            <Button onClick={handleSaveSchedule} color="primary">
+              저장
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
   );
 };
-
-export default StudySchedule;
+export default ScheduleManagement;

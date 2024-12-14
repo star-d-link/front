@@ -17,7 +17,7 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
-        <Route path="/study-schedule" element={<StudySchedule />} />
+        <Route path="/study-schedule/:studyId" element={<StudySchedule />} />
         <Route path="/study-manage" element={<StudyManagement />} />
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
