@@ -9,8 +9,8 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <div className="w-full max-w-full md:max-w-screen-lg px-4 mx-auto">
           <div className="mb-24 md:mb-16 ">
             <Header />
@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")).render(
           <App />
           <Footer />
         </div>
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   </StrictMode>
 );

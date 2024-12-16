@@ -1,60 +1,44 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
-import KakaoMapCreate from "../components/KakaoMapCreate.jsx";
-import "react-quill/dist/quill.snow.css";
-import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
 import ApiClient from "../auth/apiClient";
 
-const StudyCreate = () => {
-  const { user, loading } = useAuth(); // 사용자 정보와 로딩 상태 가져오기
+const StudyEdit = () => {
+  const { studyId } = useParams();
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     hashtag: "",
-    isRecruit: true,
     region: "",
     isOnline: false,
     headCount: 0,
-    latitude: null,
-    longitude: null,
   });
-
   const [quillContent, setQuillContent] = useState("");
 
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        [{ color: [] }, { background: [] }],
-        [{ align: [] }, "link", "image"],
-      ],
-    },
-  }), []);
-
+  // 스터디 데이터 가져오기
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login"); // 로그인 페이지로 리다이렉트
-    }
-  }, [navigate]);
+    const fetchStudy = async () => {
+      try {
+        const response = await ApiClient.get(`/study/${studyId}`);
+        const { data } = response.data;
+        setFormData({
+          title: data.title,
+          hashtag: data.hashtag,
+          region: data.region,
+          isOnline: data.isOnline,
+          headCount: data.headCount,
+        });
+        setQuillContent(data.content);
+      } catch (error) {
+        console.error("스터디 데이터를 가져오는 중 문제가 발생했습니다.", error);
+      }
+    };
 
-  const handleMapUpdate = (latitude, longitude, address) => {
-    const region = address.split(/[\s,]/)[0];
-    setFormData((prevData) => ({
-      ...prevData,
-      latitude: parseFloat(latitude),
-      longitude: parseFloat(longitude),
-      region,
-    }));
-  };
+    fetchStudy();
+  }, [studyId]);
 
+  // 입력값 변경 핸들러
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -63,6 +47,7 @@ const StudyCreate = () => {
     }));
   };
 
+  // Boolean 값 변경 핸들러
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setFormData((prevData) => ({
@@ -71,34 +56,27 @@ const StudyCreate = () => {
     }));
   };
 
+  // 수정 제출 핸들러
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const requestData = {
       ...formData,
       content: quillContent,
     };
-    console.log("요청 데이터:", requestData); // 확인용 로그
-
 
     try {
-      const response = await ApiClient.post("/study/create", requestData);
-      alert(response.data.message || "스터디가 성공적으로 생성되었습니다.");
-      navigate("/list"); // 생성 후 스터디 목록 페이지로 이동
+      const response = await ApiClient.put(`/study/${studyId}`, requestData);
+      alert(response.data.message || "스터디가 성공적으로 수정되었습니다.");
+      navigate(`/study/${studyId}`); // 수정 후 상세 페이지로 이동
     } catch (error) {
-      console.error(error);
-      alert("스터디 생성 중 오류가 발생했습니다.");
+      console.error("스터디 수정 중 문제가 발생했습니다.", error);
+      alert("스터디 수정 중 문제가 발생했습니다.");
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  // 렌더링
   return (
       <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">스터디 모집글 작성</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">스터디 수정</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* 제목 */}
           <div>
@@ -122,7 +100,16 @@ const StudyCreate = () => {
             <ReactQuill
                 value={quillContent}
                 onChange={setQuillContent}
-                modules={modules}
+                modules={{
+                  toolbar: [
+                    [{ header: [1, 2, 3, false] }],
+                    ["bold", "italic", "underline", "strike"],
+                    ["blockquote"],
+                    [{ list: "ordered" }, { list: "bullet" }],
+                    [{ color: [] }, { background: [] }],
+                    [{ align: [] }, "link", "image"],
+                  ],
+                }}
                 placeholder="스터디 내용을 작성하세요..."
                 theme="snow"
                 className="bg-white rounded-lg"
@@ -174,30 +161,16 @@ const StudyCreate = () => {
             </label>
           </div>
 
-          {/* Kakao 지도 */}
-          {!formData.isOnline && (
-              <div>
-                <label className="block text-lg font-semibold mb-2">스터디 장소</label>
-                <KakaoMapCreate onLocationSelect={handleMapUpdate} />
-                {formData.latitude && formData.longitude && (
-                    <p className="text-sm text-gray-500 mt-2">
-                      선택된 지역: {formData.region} <br />
-                      위도: {formData.latitude}, 경도: {formData.longitude}
-                    </p>
-                )}
-              </div>
-          )}
-
           {/* 제출 버튼 */}
           <button
               type="submit"
               className="w-full py-3 text-lg font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
           >
-            모집글 작성
+            수정하기
           </button>
         </form>
       </div>
   );
 };
 
-export default StudyCreate;
+export default StudyEdit;
