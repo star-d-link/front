@@ -21,7 +21,6 @@ const StudyDetailContent = ({ title, content }) => {
               whiteSpace: "pre-wrap",
             }}
         />
-        <Divider sx={{ my: 2 }} />
       </>
   );
 };

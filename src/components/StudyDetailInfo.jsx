@@ -13,7 +13,7 @@ const StudyDetailInfo = ({ isRecruit, region, isOnline, headCount }) => (
       ) : (
           <Chip label="오프라인" color="secondary" />
       )}
-      <Chip label={`${region}`} variant="outlined" />
+      {!isOnline && <Chip label={`${region}`} variant="outlined" />} {/* 오프라인일 때만 지역 표시 */}
       <Chip label={` ${headCount}명`} variant="outlined" />
     </Stack>
 );
