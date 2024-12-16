@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await apiClient.post("/login", { username, password });
-      const { token } = response.data;
+      const token = response.headers.authorization;
       login(token);
       // 로그인 성공 메시지 및 페이지 이동
       alert("로그인 되셨습니다.");
