@@ -50,7 +50,7 @@ const Header = () => {
           </button>
           <button
             className="text-gray-700 hover:text-blue-500"
-            onClick={() => navigate("/mypage")}
+            onClick={() => navigate("/my-page")}
           >
             마이페이지
           </button>
@@ -66,7 +66,7 @@ const Header = () => {
           </button>
         ) : (
           <button
-            className="bg-orange-500 text-white px-4 py-2 rounded-full text-sm hover:bg-orange-600"
+            className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm hover:bg-orange-600"
             onClick={() => navigate("/login")}
           >
             로그인
@@ -102,7 +102,7 @@ const Header = () => {
         </button>
         <button
           className="text-gray-700 hover:text-blue-500"
-          onClick={() => navigate("/mypage")}
+          onClick={() => navigate("/my-page")}
         >
           마이 페이지
         </button>
