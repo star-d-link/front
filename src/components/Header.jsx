@@ -44,7 +44,7 @@ const Header = () => {
           </button>
           <button
             className="text-gray-700 hover:text-blue-500"
-            onClick={() => navigate("/study-create")}
+            onClick={() => navigate("/study-manage")}
           >
             스터디 관리
           </button>
@@ -84,7 +84,7 @@ const Header = () => {
         </button>
         <button
           className="text-gray-700 hover:text-blue-500"
-          onClick={() => navigate("/create-group")}
+          onClick={() => navigate("/list")}
         >
           스터디
         </button>
@@ -96,7 +96,7 @@ const Header = () => {
         </button>
         <button
           className="text-gray-700 hover:text-blue-500"
-          onClick={() => navigate("/lounge")}
+          onClick={() => navigate("/study-manage")}
         >
           스터디 관리
         </button>
