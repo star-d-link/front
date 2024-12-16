@@ -18,6 +18,7 @@ const MyPage = () => {
     const fetchUserInfo = async () => {
       try {
         const response = await apiClient.get("/profile");
+        console.log(response.data);
         if (response.data.profileUrl !== null) {
           response.data.profileUrl =
             "http://localhost:8080" + response.data.profileUrl;
