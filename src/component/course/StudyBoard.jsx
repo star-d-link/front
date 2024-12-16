@@ -33,7 +33,7 @@ const StudyBoardForm = () => {
     try {
 
       const response = await apiClient.post(`/study/${studyId}/board`, requestBody);
-      if(response.status === 201){
+      if(response.status === 200){
         alert("게시글이 성공적으로 등록되었습니다!");
       }else{
         error("게시글 등록 중 오류가 발생했습니다:");

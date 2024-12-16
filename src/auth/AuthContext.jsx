@@ -3,7 +3,6 @@ import ApiClient from "./apiClient";
 
 const AuthContext = createContext();
 
-
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -20,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await ApiClient.get("/user/me");
+        const response = await ApiClient.get("/users/user/me");
         setUser(response.data); // 사용자 정보 저장
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -44,8 +43,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-      <AuthContext.Provider value={{ user, loading, login, logout }}>
-        {children}
-      </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
