@@ -36,12 +36,12 @@ const Header = () => {
           >
             스터디 생성/찾기
           </button>
-          <button
+          {/* <button
             className="text-gray-700 hover:text-blue-500"
             onClick={() => navigate("/course-review-form")}
           >
             리뷰 작성/찾기
-          </button>
+          </button> */}
           <button
             className="text-gray-700 hover:text-blue-500"
             onClick={() => navigate("/study-manage")}
@@ -88,12 +88,12 @@ const Header = () => {
         >
           스터디
         </button>
-        <button
+        {/* <button
           className="text-gray-700 hover:text-blue-500"
           onClick={() => navigate("/projects")}
         >
           리뷰
-        </button>
+        </button> */}
         <button
           className="text-gray-700 hover:text-blue-500"
           onClick={() => navigate("/study-manage")}
