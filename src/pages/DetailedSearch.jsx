@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {useLocation, useNavigate} from "react-router-dom";
-import axios from "axios";
+import ApiClient from "../auth/apiClient";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination.jsx";
 
@@ -24,7 +24,7 @@ const DetailedSearch = () => {
       }
 
       try {
-        const response = await axios.get("http://localhost:8080/study/detailed-search", {
+        const response = await ApiClient.get("http://localhost:8080/study/detailed-search", {
           params: {
             hashtag,
             page: 0,

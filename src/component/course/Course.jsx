@@ -1,4 +1,8 @@
+import { Height } from "@mui/icons-material";
+import { height } from "@mui/system";
 import React, { useState } from "react";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Quill 기본 스타일 추가
 
 const CourseReviewForm = () => {
   const [review, setReview] = useState({
@@ -38,93 +42,100 @@ const CourseReviewForm = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">강의 리뷰 작성</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">
-            제목:
-            <input
-              type="text"
-              name="title"
-              onChange={onChange}
-              required
-              className="w-full border rounded-md p-2 mt-1"
-            />
-          </label>
+    <div className="max-w-5xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">강의 리뷰 작성</h1>
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="flex items-center space-x-4 mb-4">
+          {/* 제목 */}
+          <label className="text-base font-medium text-gray-700 w-20">제목</label>
+          <input
+            type="text"
+            name="title"
+            onChange={onChange}
+            required
+            placeholder="제목을 입력하세요"
+            className="flex-1 border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
 
-        <div>
-          <label className="block font-medium mb-1">
-            이름:
-            <input
-              type="text"
-              name="name"
-              onChange={onChange}
-              required
-              className="w-full border rounded-md p-2 mt-1"
-            />
-          </label>
+        <div className="flex items-center space-x-4 mb-4">
+          {/* 이름 */}
+          <label className="text-base font-medium text-gray-700 w-20">이름</label>
+          <input
+            type="text"
+            name="name"
+            onChange={onChange}
+            required
+            placeholder="이름을 입력하세요"
+            className="flex-1 border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
 
+        {/* 평점 */}
         <div>
-          <label className="block font-medium mb-1">평점:</label>
-          <div className="flex space-x-1">
-            {[...Array(10)].map((_, i) => (
-              <button
-                key={i + 1}
-                type="button"
-                onClick={() => handleRatingChange(i + 1)}
-                className={`w-8 h-8 rounded-full ${
-                  review.rating >= i + 1
-                    ? "bg-yellow-400"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                ★
-              </button>
-            ))}
+          <div className="flex items-center space-x-3">
+            <label className="text-base font-medium text-gray-700">평점</label>
+            <div className="flex space-x-3">
+              {[...Array(10)].map((_, i) => (
+                <button
+                  key={i + 1}
+                  type="button"
+                  onClick={() => handleRatingChange(i + 1)}
+                  className={`w-8 h-8 flex items-center justify-center rounded-full transition ${
+                    review.rating >= i + 1
+                      ? "bg-yellow-400 text-white"
+                      : "bg-gray-200 hover:bg-gray-300"
+                  }`}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">선택한 평점: {review.rating}</p>
+          <p className="text-sm text-gray-500 mt-3">선택한 평점: {review.rating}</p>
         </div>
 
         <div>
-          <label className="block font-medium mb-1">
-            내용:
-            <textarea
-              name="content"
-              onChange={onChange}
-              required
-              className="w-full border rounded-md p-2 mt-1"
-              rows="4"
-            />
+  <label className="block text-base font-medium mb-2 text-gray-700">내용</label>
+  <div className="relative" style={{ height: "300px" }}>
+    <ReactQuill
+      theme="snow"
+      value={review.content}
+      onChange={(content) =>
+        setReview((prev) => ({ ...prev, content }))
+      }
+      className="bg-white border border-gray-300 rounded-md"
+      style={{ height: "100%", overflow: "hidden" }} // 부모 div의 크기와 맞추기
+    />
+  </div>
+</div>
+
+
+        {/* 해시태그 */}
+        <div>
+          <label className="block text-base font-medium mb-2 text-gray-700">
+            해시태그 (쉼표로 구분)
           </label>
+          <input
+            type="text"
+            name="hashtag"
+            onChange={onChange}
+            placeholder="예: #리뷰, #강의"
+            className="w-full border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
         </div>
 
+        {/* 파일 업로드 */}
         <div>
-          <label className="block font-medium mb-1">
-            해시태그 (쉼표로 구분):
-            <input
-              type="text"
-              name="hashtag"
-              onChange={onChange}
-              className="w-full border rounded-md p-2 mt-1"
-            />
-          </label>
-        </div>
-
-        <div>
-          <label className="block font-medium mb-1">
-            파일 업로드:
-            <input
-              type="file"
-              name="files"
-              multiple
-              onChange={handleFileChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border file:border-gray-300 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
-            />
-          </label>
-          <ul className="mt-2 text-sm text-gray-600">
+          <label className="block text-base font-medium mb-2 text-gray-700">파일 업로드</label>
+          <input
+            type="file"
+            name="files"
+            multiple
+            onChange={handleFileChange}
+            className="block w-full text-base text-gray-600 file:mr-4 file:py-1 file:px-2 file:rounded-md file:border file:border-gray-300 file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+          />
+          <ul className="mt-3 text-sm text-gray-600 space-y-1">
             {review.files.map((file, index) => (
               <li key={index} className="flex items-center space-x-2">
                 <span>📄 {file.name}</span>
@@ -133,12 +144,15 @@ const CourseReviewForm = () => {
           </ul>
         </div>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600"
-        >
+        {/* 제출 버튼 */}
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             등록
-        </button>
+          </button>
+        </div>
       </form>
     </div>
   );

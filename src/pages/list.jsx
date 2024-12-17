@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import ApiClient from "../auth/apiClient";
 import StudyCard from "../components/StudyCard";
 import Pagination from "../components/Pagination";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "../components/Sidebar.jsx";
 import Header from "../components/Header.jsx";
-import Footer from "../components/Footer.jsx";
 
 const List = () => {
   const [studies, setStudies] = useState([]);
@@ -30,6 +28,7 @@ const List = () => {
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
   useEffect(() => {
     const fetchStudies = async () => {
       try {
@@ -50,12 +49,14 @@ const List = () => {
           requestParams.isRecruit = isRecruit;
         }
 
-        const response = await axios.get("http://localhost:8080/study/list", { params: requestParams });
+        const response = await ApiClient.get("/study/list", { params: requestParams });
         setStudies(response.data.data.content || []);
         setTotalPages(response.data.data.totalPages || 1);
-      } catch {
+      } catch (error) {
+        console.error("스터디 데이터를 가져오는 중 오류 발생:", error);
         setError("스터디 목록을 불러오는 중 문제가 발생했습니다.");
       }
+
     };
 
     fetchStudies().catch((e) => {
@@ -91,20 +92,25 @@ const List = () => {
     navigate(`/list?${params.toString()}`);
   };
 
+  const handleCreateStudy = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login"); // 로그인 페이지로 리다이렉트
+      return;
+    }
+    navigate("/study-create"); // 인증이 되어 있다면 스터디 생성 페이지로 이동
+  };
+
+
+
   return (
       <div className="flex flex-col md:flex-row min-h-screen">
-        {/* Sidebar */}
-        <Sidebar
-            isMobile={isMobile}
-            toggleSidebar={isSidebarOpen}
-            setSidebarOpen={setIsSidebarOpen}
-        />
-
         <div className="flex flex-col flex-1">
           {/* Header */}
           <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen}/>
           <div className="bg-gray-100 min-h-screen p-4">
-            <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-8">스터디
+            <h1 className="text-2xl font-extrabold text-gray-800 mb-8">스터디
               목록</h1>
             <div className="flex justify-center gap-6 mb-6">
               <div className="flex items-center gap-2">
@@ -159,6 +165,13 @@ const List = () => {
                     목록이 없습니다.</div>
               )}
             </div>
+
+            <button
+                onClick={handleCreateStudy}
+                className="fixed bottom-6 right-6 bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 focus:ring-4 focus:ring-blue-300"
+            >
+              스터디 생성
+            </button>
             <div className="flex justify-center mt-8">
               <Pagination
                   currentPage={currentPage}
@@ -172,7 +185,6 @@ const List = () => {
               />
             </div>
           </div>
-          <Footer/>
         </div>
       </div>
 

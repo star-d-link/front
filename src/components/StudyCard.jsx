@@ -5,7 +5,11 @@ import Stack from "@mui/material/Stack";
 
 const StudyCard = ({ study, onClick, className }) => {
   return (
-      <Card onClick={onClick} className={className} sx={{ cursor: "pointer", transition: "0.3s", '&:hover': { boxShadow: 6 } }}>
+      <Card
+          onClick={onClick}
+          className={className}
+          sx={{ cursor: "pointer", transition: "0.3s", "&:hover": { boxShadow: 6 } }}
+      >
         <CardHeader
             avatar={<Avatar sx={{ width: 32, height: 32 }}>{study.username.charAt(0).toUpperCase()}</Avatar>}
             title={
@@ -28,11 +32,19 @@ const StudyCard = ({ study, onClick, className }) => {
           <Typography variant="subtitle1" component="div" gutterBottom fontWeight="bold">
             {study.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary" paragraph>
-            {study.content.length > 100 ? `${study.content.substring(0, 100)}...` : study.content}
-          </Typography>
+          {/* HTML 콘텐츠 렌더링 */}
+          <Typography
+              variant="body2"
+              color="text.secondary"
+              paragraph
+              dangerouslySetInnerHTML={{
+                __html: study.content.length > 100
+                    ? `${study.content.substring(0, 100)}...`
+                    : study.content,
+              }}
+          />
           <div>
-            {study.hashtag.split(' ').map((tag, index) => (
+            {study.hashtag.split(" ").map((tag, index) => (
                 <Chip key={index} label={tag} variant="outlined" size="small" sx={{ margin: "2px" }} />
             ))}
           </div>
