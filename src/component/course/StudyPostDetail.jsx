@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill 기본 스타일 추가
-import axios from "../api"; // axios 인스턴스 사용
+import apiClient from "../../auth/apiClient";
 
 const StudyPostDetail = () => {
   const { studyId, postId } = useParams();
@@ -14,7 +14,9 @@ const StudyPostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:5173/study/${studyId}/post/${postId}`);
+        const response = await apiClient.get(
+          `/study/group/${studyId}/post/${postId}`
+        );
         setPost(response.data);
       } catch (err) {
         setError("게시글을 불러오는 데 실패했습니다.");
@@ -28,17 +30,22 @@ const StudyPostDetail = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/study/${studyId}/post/${postId}`);
+      await apiClient.delete(`/study/group/${studyId}/post/${postId}`);
       alert("게시글이 삭제되었습니다.");
-      navigate(`/study/${studyId}`); // 스터디 목록 페이지로 이동
+      navigate(`/study/group/${studyId}/list`); // 스터디 목록 페이지로 이동
     } catch (err) {
       alert("게시글 삭제에 실패했습니다.");
     }
   };
 
   const handleEdit = () => {
-    navigate(`/study/${studyId}/post/${postId}/edit`); // 수정 페이지로 이동
+    navigate(`/study/group/${studyId}/post/${postId}/edit`); // 수정 페이지로 이동
   };
+  const handleBackToList = () => {
+    navigate(`/study/group/${studyId}/list`); // 리스트 페이지로 이동
+  };
+  
+  
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;
@@ -60,6 +67,12 @@ const StudyPostDetail = () => {
       </div>
 
       <div className="flex justify-end space-x-4">
+        <button
+          onClick={handleBackToList}
+          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          목록
+        </button>
         <button
           onClick={handleEdit}
           className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"

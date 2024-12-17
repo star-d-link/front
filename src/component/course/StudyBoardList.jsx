@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "../api";
+import apiClient from "../../auth/apiClient";
 
 const StudyPostList = () => {
   const { studyId } = useParams();
@@ -13,7 +13,7 @@ const StudyPostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get(`/study/${studyId}/posts`, {
+        const response = await apiClient.get(`/study/group/${studyId}`, {
           params: { page: currentPage, size: 10 },
         });
         setPosts(response.data.content);
@@ -37,7 +37,15 @@ const StudyPostList = () => {
 
   return (
     <div className="max-w-5xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">스터디 게시글 목록</h1>
+      <div className="flex justify-between items-center mb-6">
+  <h1 className="text-2xl font-bold text-gray-800">스터디 게시글 목록</h1>
+  <Link
+    to={`/study/${studyId}/board`}
+    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+  >
+    작성
+  </Link>
+</div>
 
       <ul className="mb-8">
         {posts.map((post) => (

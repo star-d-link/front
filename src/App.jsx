@@ -16,6 +16,10 @@ import AdminPage from "./pages/AdminPage.jsx";
 import CourseDetail from "./component/course/CourseDetail.jsx";
 import StudySchedule from "./pages/StudySchedule.jsx";
 import StudyBoardForm from "./component/course/StudyBoard.jsx";
+import StudyPostDetail from "./component/course/StudyPostDetail.jsx";
+import StudyModify from "./component/course/StudyModify.jsx";
+import StudyList from "./components/StudyList.jsx";
+import StudyPostList from "./component/course/StudyBoardList.jsx";
 function App() {
   return (
     <AuthProvider>
@@ -30,6 +34,9 @@ function App() {
         <Route path="/detailed-search" element={<DetailedSearch />} />
         <Route path="/study-create" element={<StudyCreate />} />
         <Route path="/course-detail" element={<CourseDetail />} />
+        <Route path="/study/:studyId/post/:postId" element={<StudyPostDetail />} />
+        <Route path="/study/group/:studyId/post/:postId/edit" element={<StudyModify />} />
+        <Route path="/study/group/:studyId/list" element={<StudyPostList />} />
         <Route path="/study/:studyId/board" element={<StudyBoardForm />} />
         <Route path="/course-review-form" element={<CourseReviewForm />} />
         <Route path="/signup" element={<SignUp />} />
