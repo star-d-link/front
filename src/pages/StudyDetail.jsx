@@ -59,7 +59,7 @@ const StudyDetail = () => {
     const fetchLikeStatus = async () => {
       try {
         const response = await ApiClient.get(`/study/${studyId}/like/status`);
-        setIsLiked(response.data.isLiked);
+        setIsLiked(response.data.data);
       } catch (error) {
         console.error("좋아요 상태 조회 중 오류 발생:", error);
       }
