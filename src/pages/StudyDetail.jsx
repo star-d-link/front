@@ -54,6 +54,20 @@ const StudyDetail = () => {
     fetchStudy();
   }, [studyId]);
 
+  // 좋아요 상태 조회 추가
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await ApiClient.get(`/study/${studyId}/like/status`);
+        setIsLiked(response.data.isLiked); // 좋아요 상태 설정
+      } catch (error) {
+        console.error("좋아요 상태 조회 중 오류 발생:", error);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [studyId]);
+
   // 좋아요 처리
   const handleLikeToggle = async () => {
     try {
@@ -145,26 +159,16 @@ const StudyDetail = () => {
                   <Button
                       onClick={handleLikeToggle}
                       className="text-red-500"
-                      startIcon={isLiked ? <FavoriteIcon/> :
-                          <FavoriteBorderIcon/>}
+                      startIcon={isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                   >
                     {study.likesCount}
                   </Button>
                 </div>
-                <StudyContent title={study.title} content={study.content}/>
+                <StudyContent title={study.title} content={study.content} />
                 <div className="mt-6">
-                  <Studytag hashtag={study.hashtag}/>
+                  <Studytag hashtag={study.hashtag} />
                 </div>
-                {!study.isOnline && (
-                    <KakaoMap latitude={study.latitude}
-                              longitude={study.longitude}/>
-                )}
-                <div className="text-center mt-4">
-                  <Button variant="contained" color="primary"
-                          onClick={handleApply}>
-                    스터디 신청
-                  </Button>
-                </div>
+                {!study.isOnline && <KakaoMap latitude={study.latitude} longitude={study.longitude} />}
               </CardContent>
             </Card>
             {isOwner && (
