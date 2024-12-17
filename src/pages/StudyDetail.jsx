@@ -54,19 +54,21 @@ const StudyDetail = () => {
     fetchStudy();
   }, [studyId]);
 
-  // 좋아요 상태 조회 추가
+  // 좋아요 상태 조회
   useEffect(() => {
     const fetchLikeStatus = async () => {
       try {
         const response = await ApiClient.get(`/study/${studyId}/like/status`);
-        setIsLiked(response.data.isLiked); // 좋아요 상태 설정
+        setIsLiked(response.data.isLiked);
       } catch (error) {
         console.error("좋아요 상태 조회 중 오류 발생:", error);
       }
     };
 
-    fetchLikeStatus();
-  }, [studyId]);
+    if (user) {
+      fetchLikeStatus();
+    }
+  }, [studyId, user]);
 
   // 좋아요 처리
   const handleLikeToggle = async () => {
@@ -169,6 +171,11 @@ const StudyDetail = () => {
                   <Studytag hashtag={study.hashtag} />
                 </div>
                 {!study.isOnline && <KakaoMap latitude={study.latitude} longitude={study.longitude} />}
+                <div className="text-center mt-4">
+                  <Button variant="contained" color="primary" onClick={handleApply}>
+                    스터디 신청
+                  </Button>
+                </div>
               </CardContent>
             </Card>
             {isOwner && (
