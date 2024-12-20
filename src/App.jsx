@@ -18,7 +18,6 @@ import StudySchedule from "./pages/StudySchedule.jsx";
 import StudyBoardForm from "./component/course/StudyBoard.jsx";
 import StudyPostDetail from "./component/course/StudyPostDetail.jsx";
 import StudyModify from "./component/course/StudyModify.jsx";
-import StudyList from "./components/StudyList.jsx";
 import StudyPostList from "./component/course/StudyBoardList.jsx";
 function App() {
   return (
