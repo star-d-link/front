@@ -15,17 +15,16 @@ import { useAuth } from "../auth/AuthContext.jsx";
 
 const StudyDetail = () => {
   const { studyId } = useParams();
-  const { user } = useAuth(); // 현재 로그인 사용자 정보
-  const [study, setStudy] = useState(null); // 스터디 상세 정보
-  const [isLiked, setIsLiked] = useState(false); // 좋아요 상태
+  const { user } = useAuth();
+  const [study, setStudy] = useState(null);
+  const [isLiked, setIsLiked] = useState(false);
   const [error, setError] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "" }); // 스낵바 상태
+  const [snackbar, setSnackbar] = useState({ open: false, message: "" });
   const navigate = useNavigate();
 
   const [isMobile, setIsMobile] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // 모바일 여부 확인
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -34,17 +33,15 @@ const StudyDetail = () => {
 
     handleResize();
     window.addEventListener("resize", handleResize);
-
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 스터디 정보 가져오기
   useEffect(() => {
     const fetchStudy = async () => {
       try {
         const response = await ApiClient.get(`/study/${studyId}`);
         setStudy(response.data.data);
-        setIsLiked(response.data.data.isLiked); // 좋아요 상태 설정
+        setIsLiked(response.data.data.isLiked);
       } catch (error) {
         console.error("스터디 정보를 가져오는 중 오류 발생:", error);
         setError("스터디 정보를 불러오는 중 문제가 발생했습니다.");
@@ -54,7 +51,6 @@ const StudyDetail = () => {
     fetchStudy();
   }, [studyId]);
 
-  // 좋아요 상태 조회
   useEffect(() => {
     const fetchLikeStatus = async () => {
       try {
@@ -70,7 +66,6 @@ const StudyDetail = () => {
     }
   }, [studyId, user]);
 
-  // 좋아요 처리
   const handleLikeToggle = async () => {
     try {
       const response = isLiked
@@ -94,7 +89,6 @@ const StudyDetail = () => {
     }
   };
 
-  // 스터디 신청
   const handleApply = async () => {
     try {
       const response = await ApiClient.post(`/study/${studyId}/apply`);
@@ -107,7 +101,20 @@ const StudyDetail = () => {
     }
   };
 
-  // 수정 및 삭제
+  // 스터디 모집 완료 처리 핸들러
+  const handleCompleteRecruitment = async () => {
+    try {
+      const response = await ApiClient.put(`/study/${studyId}/complete`);
+      if (response.status === 200) {
+        setStudy((prev) => ({ ...prev, isRecruit: false }));
+        setSnackbar({ open: true, message: "스터디 모집이 완료되었습니다." });
+      }
+    } catch (error) {
+      console.error("스터디 모집 완료 처리 중 오류 발생:", error);
+      setSnackbar({ open: true, message: "스터디 모집 완료에 실패했습니다." });
+    }
+  };
+
   const handleEdit = () => navigate(`/study-edit/${studyId}`);
   const handleDelete = async () => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
@@ -122,7 +129,6 @@ const StudyDetail = () => {
     }
   };
 
-  // 스낵바 닫기
   const handleSnackbarClose = () => setSnackbar({ open: false, message: "" });
 
   const isOwner = user && study && user.username === study.username;
@@ -170,11 +176,19 @@ const StudyDetail = () => {
                 <div className="mt-6">
                   <Studytag hashtag={study.hashtag} />
                 </div>
-                {!study.isOnline && <KakaoMap latitude={study.latitude} longitude={study.longitude} />}
-                <div className="text-center mt-4">
+                {!study.isOnline && (
+                    <KakaoMap latitude={study.latitude} longitude={study.longitude} />
+                )}
+
+                <div className="flex gap-4 justify-center mt-4">
                   <Button variant="contained" color="primary" onClick={handleApply}>
                     스터디 신청
                   </Button>
+                  {isOwner && study.isRecruit && (
+                      <Button variant="contained" color="secondary" onClick={handleCompleteRecruitment}>
+                        스터디 모집 완료
+                      </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -191,7 +205,6 @@ const StudyDetail = () => {
           </div>
         </div>
 
-        {/* 스낵바 */}
         <Snackbar
             open={snackbar.open}
             message={snackbar.message}
