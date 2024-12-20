@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill 기본 스타일 추가
-import apiClient from "../../auth/apiClient";
+import apiClient from "../../auth/ApiClient";
 
 const StudyPostDetail = () => {
   const { studyId, postId } = useParams();
@@ -44,8 +44,6 @@ const StudyPostDetail = () => {
   const handleBackToList = () => {
     navigate(`/study/group/${studyId}/list`); // 리스트 페이지로 이동
   };
-  
-  
 
   if (loading) return <div>로딩 중...</div>;
   if (error) return <div>{error}</div>;

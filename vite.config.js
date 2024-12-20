@@ -10,4 +10,8 @@ export default defineConfig({
       plugins: [tailwindcss()],
     },
   },
+  server: {
+    host: "0.0.0.0", //외부접근 가능설정
+    port: 5173, //port설정
+  },
 });

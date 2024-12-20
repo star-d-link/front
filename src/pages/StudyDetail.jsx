@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ApiClient from "../auth/apiClient";
-import { Card, CardContent, Button, CircularProgress, Snackbar } from "@mui/material";
+import ApiClient from "../auth/ApiClient";
+import {
+  Card,
+  CardContent,
+  Button,
+  CircularProgress,
+  Snackbar,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StudyHeader from "../components/StudyDetailHeader";
@@ -58,8 +64,8 @@ const StudyDetail = () => {
   const handleLikeToggle = async () => {
     try {
       const response = isLiked
-          ? await ApiClient.delete(`/study/${studyId}/like`)
-          : await ApiClient.post(`/study/${studyId}/like`);
+        ? await ApiClient.delete(`/study/${studyId}/like`)
+        : await ApiClient.post(`/study/${studyId}/like`);
 
       if (response.status === 200) {
         setIsLiked(!isLiked);
@@ -83,7 +89,10 @@ const StudyDetail = () => {
     try {
       const response = await ApiClient.post(`/study/${studyId}/apply`);
       if (response.status === 200) {
-        setSnackbar({ open: true, message: "스터디에 성공적으로 신청되었습니다." });
+        setSnackbar({
+          open: true,
+          message: "스터디에 성공적으로 신청되었습니다.",
+        });
       }
     } catch (error) {
       console.error("스터디 신청 중 오류 발생:", error);
@@ -117,77 +126,87 @@ const StudyDetail = () => {
 
   if (!study) {
     return (
-        <div className="text-center mt-4">
-          <CircularProgress />
-        </div>
+      <div className="text-center mt-4">
+        <CircularProgress />
+      </div>
     );
   }
 
   return (
-      <div className="flex flex-col md:flex-row min-h-screen">
-        <div className="flex flex-col flex-1">
-          <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
-          <div className="bg-gray-100 min-h-screen p-4">
-            <Card className="max-w-2xl mx-auto mt-4 p-4">
-              <CardContent>
-                <StudyInfo
-                    isRecruit={study.isRecruit}
-                    region={study.region}
-                    isOnline={study.isOnline}
-                    headCount={study.headCount}
+    <div className="flex flex-col md:flex-row min-h-screen">
+      <div className="flex flex-col flex-1">
+        <Header isMobile={isMobile} toggleSidebar={setIsSidebarOpen} />
+        <div className="bg-gray-100 min-h-screen p-4">
+          <Card className="max-w-2xl mx-auto mt-4 p-4">
+            <CardContent>
+              <StudyInfo
+                isRecruit={study.isRecruit}
+                region={study.region}
+                isOnline={study.isOnline}
+                headCount={study.headCount}
+              />
+              <StudyHeader
+                username={study.username}
+                createDate={study.createDate}
+                likesCount={study.likesCount}
+              />
+              <div className="flex items-center justify-between my-2">
+                <Button
+                  onClick={handleLikeToggle}
+                  className="text-red-500"
+                  startIcon={
+                    isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />
+                  }
+                >
+                  {study.likesCount}
+                </Button>
+              </div>
+              <StudyContent title={study.title} content={study.content} />
+              <div className="mt-6">
+                <Studytag hashtag={study.hashtag} />
+              </div>
+              {!study.isOnline && (
+                <KakaoMap
+                  latitude={study.latitude}
+                  longitude={study.longitude}
                 />
-                <StudyHeader
-                    username={study.username}
-                    createDate={study.createDate}
-                    likesCount={study.likesCount}
-                />
-                <div className="flex items-center justify-between my-2">
-                  <Button
-                      onClick={handleLikeToggle}
-                      className="text-red-500"
-                      startIcon={isLiked ? <FavoriteIcon/> :
-                          <FavoriteBorderIcon/>}
-                  >
-                    {study.likesCount}
-                  </Button>
-                </div>
-                <StudyContent title={study.title} content={study.content}/>
-                <div className="mt-6">
-                  <Studytag hashtag={study.hashtag}/>
-                </div>
-                {!study.isOnline && (
-                    <KakaoMap latitude={study.latitude}
-                              longitude={study.longitude}/>
-                )}
-                <div className="text-center mt-4">
-                  <Button variant="contained" color="primary"
-                          onClick={handleApply}>
-                    스터디 신청
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-            {isOwner && (
-                <div className="flex gap-4 justify-center mt-4">
-                  <Button variant="outlined" color="primary" onClick={handleEdit}>
-                    수정
-                  </Button>
-                  <Button variant="contained" color="secondary" onClick={handleDelete}>
-                    삭제
-                  </Button>
-                </div>
-            )}
-          </div>
+              )}
+              <div className="text-center mt-4">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleApply}
+                >
+                  스터디 신청
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          {isOwner && (
+            <div className="flex gap-4 justify-center mt-4">
+              <Button variant="outlined" color="primary" onClick={handleEdit}>
+                수정
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleDelete}
+              >
+                삭제
+              </Button>
+            </div>
+          )}
         </div>
-
-        {/* 스낵바 */}
-        <Snackbar
-            open={snackbar.open}
-            message={snackbar.message}
-            autoHideDuration={3000}
-            onClose={handleSnackbarClose}
-        />
       </div>
+
+      {/* 스낵바 */}
+      <Snackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      />
+    </div>
   );
 };
 

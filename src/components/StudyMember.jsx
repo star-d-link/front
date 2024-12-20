@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import ApiClient from "../auth/apiClient.jsx";
+import ApiClient from "../auth/ApiClient.jsx";
 import {
   Button,
   Card,
@@ -41,7 +41,7 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
           ...joined.filter((member) => member.status === "참여중"),
         ];
         const pendingMembers = joined.filter(
-            (member) => member.status === "대기중"
+          (member) => member.status === "대기중"
         );
 
         setMembers({
@@ -71,12 +71,12 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
       // 승인 후 상태 업데이트
       setMembers((prev) => {
         const approvedMember = prev.pending.find(
-            (member) => member.studyManageId === studyManageId
+          (member) => member.studyManageId === studyManageId
         );
         return {
           active: [...prev.active, { ...approvedMember, status: "참여중" }],
           pending: prev.pending.filter(
-              (member) => member.studyManageId !== studyManageId
+            (member) => member.studyManageId !== studyManageId
           ),
         };
       });
@@ -89,14 +89,16 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
   // 거절 처리
   const rejectMember = async (studyManageId) => {
     try {
-      await ApiClient.delete(`/study/${studyId}/manage/${studyManageId}/reject`);
+      await ApiClient.delete(
+        `/study/${studyId}/manage/${studyManageId}/reject`
+      );
       setSnackbar({ open: true, message: "멤버가 거절되었습니다." });
 
       // 거절 후 상태 업데이트
       setMembers((prev) => ({
         ...prev,
         pending: prev.pending.filter(
-            (member) => member.studyManageId !== studyManageId
+          (member) => member.studyManageId !== studyManageId
         ),
       }));
     } catch (err) {
@@ -112,9 +114,9 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
 
   if (loading) {
     return (
-        <div className="flex items-center justify-center h-screen">
-          <CircularProgress />
-        </div>
+      <div className="flex items-center justify-center h-screen">
+        <CircularProgress />
+      </div>
     );
   }
 
@@ -123,118 +125,126 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
   }
 
   return (
-      <div className="relative p-6 bg-gray-100 min-h-screen">
-        {/* 뒤로가기 버튼 */}
-        <IconButton
-            onClick={goBack}
-            style={{
-              position: "absolute",
-              top: "80px",
-              right: "16px",
-            }}
-        >
-          <CloseIcon />
-        </IconButton>
+    <div className="relative p-6 bg-gray-100 min-h-screen">
+      {/* 뒤로가기 버튼 */}
+      <IconButton
+        onClick={goBack}
+        style={{
+          position: "absolute",
+          top: "80px",
+          right: "16px",
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
 
-        <h2 className="text-4xl font-bold text-center mb-6">스터디 관리</h2>
+      <h2 className="text-4xl font-bold text-center mb-6">스터디 관리</h2>
 
-        {/* 참여 중인 멤버 */}
-        <section className="mb-8">
-          <h3 className="text-2xl font-semibold mb-4">참여 중인 멤버</h3>
-          {members.active.length > 0 ? (
-              <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
-                {members.active.map((member) => (
-                    <Card key={member.studyManageId} className="shadow-md">
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                          이름: {member.username}
-                        </Typography>
-                        <Typography color="textSecondary">역할: {member.role}</Typography>
-                        <Typography color="textSecondary">상태: {member.status}</Typography>
-                      </CardContent>
-                    </Card>
-                ))}
-              </div>
-          ) : (
-              <div className="text-center text-gray-500">
-                참여 중인 멤버가 없습니다.
-              </div>
-          )}
-        </section>
-
-        {/* 대기 중인 멤버 */}
-        <section>
-          <h3 className="text-2xl font-semibold mb-4">대기 중인 멤버</h3>
-          {members.pending.length > 0 ? (
-              <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
-                {members.pending.map((member) => (
-                    <Card key={member.studyManageId} className="shadow-md">
-                      <CardContent>
-                        <Typography variant="h6" gutterBottom>
-                          이름: {member.username}
-                        </Typography>
-                        <Typography color="textSecondary">역할: {member.role}</Typography>
-                        <Typography color="textSecondary">상태: {member.status}</Typography>
-                      </CardContent>
-                      <CardActions className="flex justify-end">
-                        {isManaging && (
-                            <>
-                              <Button
-                                  variant="contained"
-                                  color="primary"
-                                  onClick={() => approveMember(member.studyManageId)}
-                              >
-                                승인
-                              </Button>
-                              <Button
-                                  variant="outlined"
-                                  color="secondary"
-                                  onClick={() => rejectMember(member.studyManageId)}
-                              >
-                                거절
-                              </Button>
-                            </>
-                        )}
-                        {!isManaging && (
-                            <Typography color="textSecondary">
-                              대기 중인 멤버를 수정할 권한이 없습니다.
-                            </Typography>
-                        )}
-                      </CardActions>
-                    </Card>
-                ))}
-              </div>
-          ) : (
-              <div className="text-center text-gray-500">
-                대기 중인 멤버가 없습니다.
-              </div>
-          )}
-        </section>
-
-        {/* 일정 관리 버튼 */}
-        {currentUserStatus !== "대기중" && (
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate(`/study-manage/${studyId}/schedule`)}
-                style={{
-                  position: "fixed",
-                  bottom: "16px",
-                  right: "16px",
-                }}
-            >
-              일정 관리
-            </Button>
+      {/* 참여 중인 멤버 */}
+      <section className="mb-8">
+        <h3 className="text-2xl font-semibold mb-4">참여 중인 멤버</h3>
+        {members.active.length > 0 ? (
+          <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
+            {members.active.map((member) => (
+              <Card key={member.studyManageId} className="shadow-md">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    이름: {member.username}
+                  </Typography>
+                  <Typography color="textSecondary">
+                    역할: {member.role}
+                  </Typography>
+                  <Typography color="textSecondary">
+                    상태: {member.status}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            참여 중인 멤버가 없습니다.
+          </div>
         )}
+      </section>
 
-        {/* 스낵바 */}
-        <Snackbar
-            open={snackbar.open}
-            message={snackbar.message}
-            autoHideDuration={3000}
-            onClose={handleSnackbarClose}
-        />
-      </div>
+      {/* 대기 중인 멤버 */}
+      <section>
+        <h3 className="text-2xl font-semibold mb-4">대기 중인 멤버</h3>
+        {members.pending.length > 0 ? (
+          <div className="grid gap-6 lg:grid-cols-2 md:grid-cols-1">
+            {members.pending.map((member) => (
+              <Card key={member.studyManageId} className="shadow-md">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    이름: {member.username}
+                  </Typography>
+                  <Typography color="textSecondary">
+                    역할: {member.role}
+                  </Typography>
+                  <Typography color="textSecondary">
+                    상태: {member.status}
+                  </Typography>
+                </CardContent>
+                <CardActions className="flex justify-end">
+                  {isManaging && (
+                    <>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => approveMember(member.studyManageId)}
+                      >
+                        승인
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={() => rejectMember(member.studyManageId)}
+                      >
+                        거절
+                      </Button>
+                    </>
+                  )}
+                  {!isManaging && (
+                    <Typography color="textSecondary">
+                      대기 중인 멤버를 수정할 권한이 없습니다.
+                    </Typography>
+                  )}
+                </CardActions>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            대기 중인 멤버가 없습니다.
+          </div>
+        )}
+      </section>
+
+      {/* 일정 관리 버튼 */}
+      {currentUserStatus !== "대기중" && (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate(`/study-manage/${studyId}/schedule`)}
+          style={{
+            position: "fixed",
+            bottom: "16px",
+            right: "16px",
+          }}
+        >
+          일정 관리
+        </Button>
+      )}
+
+      {/* 스낵바 */}
+      <Snackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+      />
+    </div>
   );
 };
 
