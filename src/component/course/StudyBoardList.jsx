@@ -47,22 +47,26 @@ const StudyPostList = () => {
   </Link>
 </div>
 
-      <ul className="mb-8">
-        {posts.map((post) => (
-          <li
-            key={post.id}
-            className="border-b border-gray-300 py-4 hover:bg-gray-100"
-          >
-            <Link
-              to={`/study/${studyId}/post/${post.id}`}
-              className="text-blue-500 hover:underline"
-            >
-              {post.title}
-            </Link>
-            <div className="text-sm text-gray-500">{post.createdAt}</div>
-          </li>
-        ))}
-      </ul>
+<ul className="mb-8">
+  {posts.map((post) => (
+    <li
+      key={post.id}
+      className="border-b border-gray-300 py-4 hover:bg-gray-100 flex justify-between items-center"
+    >
+      <div>
+        <Link
+          to={`/study/${studyId}/post/${post.id}`}
+          className="text-blue-500 hover:underline"
+        >
+          {post.title}
+        </Link>
+        <div className="text-sm text-gray-500">{post.createdAt}</div>
+      </div>
+      <div className="text-sm text-gray-700">{post.nickname}</div> {/* 작성자 표시 */}
+    </li>
+  ))}
+</ul>
+
 
       <div className="flex justify-center space-x-2">
         {[...Array(totalPages)].map((_, index) => (
