@@ -36,18 +36,20 @@ const StudyCard = ({ study, onClick, className }) => {
           <Typography
               variant="body2"
               color="text.secondary"
-              paragraph
               dangerouslySetInnerHTML={{
                 __html: study.content.length > 100
                     ? `${study.content.substring(0, 100)}...`
                     : study.content,
               }}
           />
-          <div>
-            {study.hashtag.split(" ").map((tag, index) => (
-                <Chip key={index} label={tag} variant="outlined" size="small" sx={{ margin: "2px" }} />
-            ))}
-          </div>
+          {study.hashtag && study.hashtag.trim() !== "" && (
+              <div>
+                {study.hashtag.split(" ").map((tag, index) => (
+                    <Chip key={index} label={tag} variant="outlined" size="small" sx={{ margin: "2px" }} />
+                ))}
+              </div>
+          )}
+
         </CardContent>
       </Card>
   );
