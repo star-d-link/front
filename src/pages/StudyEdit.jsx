@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import ApiClient from "../auth/apiClient";
+import KakaoMapEdit from "../components/KakaoMapEdit.jsx";
 
 const StudyEdit = () => {
   const { studyId } = useParams();
@@ -13,6 +14,8 @@ const StudyEdit = () => {
     region: "",
     isOnline: false,
     headCount: 0,
+    latitude: null,
+    longitude: null,
   });
   const [quillContent, setQuillContent] = useState("");
 
@@ -28,6 +31,8 @@ const StudyEdit = () => {
           region: data.region,
           isOnline: data.isOnline,
           headCount: data.headCount,
+          latitude: data.latitude || 37.566826, // 기본값 설정
+          longitude: data.longitude || 126.9786567,
         });
         setQuillContent(data.content);
       } catch (error) {
@@ -37,6 +42,16 @@ const StudyEdit = () => {
 
     fetchStudy();
   }, [studyId]);
+
+  const handleMapUpdate = (latitude, longitude, address) => {
+    const region = address.split(/[\s,]/)[0];
+    setFormData((prevData) => ({
+      ...prevData,
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude),
+      region,
+    }));
+  };
 
   // 입력값 변경 핸들러
   const handleInputChange = (e) => {
@@ -63,6 +78,7 @@ const StudyEdit = () => {
       ...formData,
       content: quillContent,
     };
+    console.log("요청 데이터:", requestData);
 
     try {
       const response = await ApiClient.put(`/study/${studyId}`, requestData);
@@ -160,6 +176,20 @@ const StudyEdit = () => {
               <span>온라인 스터디</span>
             </label>
           </div>
+
+          {/* Kakao 지도 */}
+          {!formData.isOnline && (
+              <div>
+                <label className="block text-lg font-semibold mb-2">스터디 장소</label>
+                <KakaoMapEdit onLocationSelect={handleMapUpdate} initialLat={formData.latitude} initialLng={formData.longitude} />
+                {formData.latitude && formData.longitude && (
+                    <p className="text-sm text-gray-500 mt-2">
+                      선택된 지역: {formData.region} <br />
+                      위도: {formData.latitude}, 경도: {formData.longitude}
+                    </p>
+                )}
+              </div>
+          )}
 
           {/* 제출 버튼 */}
           <button

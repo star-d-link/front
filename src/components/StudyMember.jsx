@@ -211,20 +211,26 @@ const StudyMember = ({ studyId, goBack, isManaging }) => {
           )}
         </section>
 
-        {/* 일정 관리 버튼 */}
         {currentUserStatus !== "대기중" && (
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => navigate(`/study-manage/${studyId}/schedule`)}
-                style={{
-                  position: "fixed",
-                  bottom: "16px",
-                  right: "16px",
-                }}
-            >
-              일정 관리
-            </Button>
+            <div className="fixed bottom-4 right-4 flex gap-2">
+              {/* 스터디 게시판 이동 버튼 */}
+              <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => navigate(`/study/group/${studyId}/list`)}
+              >
+                스터디 게시판
+              </Button>
+
+              {/* 일정 관리 버튼 */}
+              <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => navigate(`/study-manage/${studyId}/schedule`)}
+              >
+                일정 관리
+              </Button>
+            </div>
         )}
 
         {/* 스낵바 */}

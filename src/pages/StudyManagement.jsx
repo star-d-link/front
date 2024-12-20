@@ -6,14 +6,13 @@ import Typography from "@mui/material/Typography";
 import { motion, AnimatePresence } from "framer-motion";
 
 const StudyManagement = () => {
-  const [adminStudies, setAdminStudies] = useState([]); // 관리 중인 스터디
-  const [joinedStudies, setJoinedStudies] = useState([]); // 가입한 스터디
-  const [loading, setLoading] = useState(true); // 로딩 상태
-  const [error, setError] = useState(null); // 에러 메시지
-  const [currentStudy, setCurrentStudy] = useState(null); // 선택된 스터디
-  const [isManaging, setIsManaging] = useState(false); // 관리 중 여부
+  const [adminStudies, setAdminStudies] = useState([]);
+  const [joinedStudies, setJoinedStudies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentStudy, setCurrentStudy] = useState(null);
+  const [isManaging, setIsManaging] = useState(false);
 
-  // 스터디 목록 가져오기
   useEffect(() => {
     const fetchStudies = async () => {
       setLoading(true);
@@ -35,17 +34,16 @@ const StudyManagement = () => {
     fetchStudies();
   }, []);
 
-  // 애니메이션 설정
   const memberVariants = {
     hidden: { x: "100%", opacity: 0 },
     visible: { x: 0, opacity: 1, transition: { duration: 0.5 } },
     exit: { x: "100%", opacity: 0, transition: { duration: 0.5 } },
   };
 
-  // 컴포넌트 렌더링
   return (
-      <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-        <div className="flex flex-col flex-1 p-6">
+      <div className="min-h-screen bg-gray-100">
+        {/* 여기 컨테이너에 p-6, max-w-4xl, mx-auto를 적용하여 레이아웃 중앙정렬과 여백 적용 */}
+        <div className="p-6 max-w-4xl mx-auto relative">
           {loading ? (
               <Typography variant="h5" align="center" className="text-gray-600">
                 로딩 중...
@@ -56,7 +54,6 @@ const StudyManagement = () => {
               </Typography>
           ) : (
               <div className="grid gap-6">
-                {/* 관리 중인 스터디 */}
                 <section>
                   <Typography variant="h4" gutterBottom>
                     관리 중인 스터디
@@ -76,7 +73,6 @@ const StudyManagement = () => {
                   )}
                 </section>
 
-                {/* 가입한 스터디 */}
                 <section>
                   <Typography variant="h4" gutterBottom>
                     가입한 스터디
@@ -98,11 +94,11 @@ const StudyManagement = () => {
               </div>
           )}
 
-          {/* 멤버 관리 애니메이션 */}
+          {/* 멤버 관리 애니메이션을 같은 컨테이너 내부에서 absolute로 처리 */}
           <AnimatePresence>
             {currentStudy && (
                 <motion.div
-                    className="absolute top-0 left-0 w-full bg-white z-40"
+                    className="absolute inset-0 bg-white"
                     variants={memberVariants}
                     initial="hidden"
                     animate="visible"
