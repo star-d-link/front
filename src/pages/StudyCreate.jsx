@@ -74,12 +74,15 @@ const StudyCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.isOnline && (!formData.latitude || !formData.longitude)) {
+      alert("오프라인 스터디 장소를 선택해주세요.");
+      return; // 폼 제출 중단
+    }
+
     const requestData = {
       ...formData,
       content: quillContent,
     };
-    console.log("요청 데이터:", requestData); // 확인용 로그
-
 
     try {
       const response = await ApiClient.post("/study/create", requestData);
@@ -131,7 +134,8 @@ const StudyCreate = () => {
 
           {/* 해시태그 */}
           <div>
-            <label htmlFor="hashtag" className="block text-lg font-semibold mb-2">
+            <label htmlFor="hashtag"
+                   className="block text-lg font-semibold mb-2">
               해시태그
             </label>
             <input
@@ -147,7 +151,8 @@ const StudyCreate = () => {
 
           {/* 모집 인원 */}
           <div>
-            <label htmlFor="headCount" className="block text-lg font-semibold mb-2">
+            <label htmlFor="headCount"
+                   className="block text-lg font-semibold mb-2">
               모집 인원
             </label>
             <input
@@ -155,8 +160,16 @@ const StudyCreate = () => {
                 id="headCount"
                 name="headCount"
                 value={formData.headCount}
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prevData) => ({
+                    ...prevData,
+                    headCount: value < 1 ? 1 : value
+                  }));
+                }}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                min="1"
+                required
             />
           </div>
 
@@ -177,11 +190,12 @@ const StudyCreate = () => {
           {/* Kakao 지도 */}
           {!formData.isOnline && (
               <div>
-                <label className="block text-lg font-semibold mb-2">스터디 장소</label>
-                <KakaoMapCreate onLocationSelect={handleMapUpdate} />
+                <label className="block text-lg font-semibold mb-2">스터디
+                  장소</label>
+                <KakaoMapCreate onLocationSelect={handleMapUpdate}/>
                 {formData.latitude && formData.longitude && (
                     <p className="text-sm text-gray-500 mt-2">
-                      선택된 지역: {formData.region} <br />
+                      선택된 지역: {formData.region} <br/>
                       위도: {formData.latitude}, 경도: {formData.longitude}
                     </p>
                 )}
